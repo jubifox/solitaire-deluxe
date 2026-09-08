@@ -6,6 +6,9 @@ aucun accès réseau. Un dossier, un double-clic, ça marche.
 Animations partout, cosmétiques à collectionner (dos de cartes, jeux de cartes, tapis, fonds)
 et **ouverture de caisses façon CS:GO** avec raretés, roulette, ticker et doublons revendus.
 
+**▶ Jouer tout de suite : <https://jubifox.github.io/solitaire-deluxe/>**
+· Télécharger : [ZIP du dépôt](https://github.com/jubifox/solitaire-deluxe/archive/refs/heads/main.zip)
+
 ---
 
 ## Lancer le jeu
@@ -98,18 +101,19 @@ La progression (pièces, collection, équipement, statistiques) est stockée dan
 
 ---
 
-## Publier sur GitHub
+## Dépôt et publication
 
-Le dépôt est déjà initialisé et committé localement. Pour l'envoyer :
+Le dépôt est <https://github.com/jubifox/solitaire-deluxe> (branche `main`), et **GitHub Pages**
+sert le jeu tel quel depuis la racine : <https://jubifox.github.io/solitaire-deluxe/>.
+
+Pour récupérer le jeu sur une autre machine :
 
 ```bash
-git remote add origin https://github.com/<votre-compte>/solitaire-deluxe.git
-git branch -M main
-git push -u origin main
+git clone https://github.com/jubifox/solitaire-deluxe.git
 ```
 
-Le jeu étant purement statique, **GitHub Pages** le sert tel quel :
-`Settings → Pages → Branch: main / root`.
+Puis ouvrir `index.html`. Pour publier des modifications : `git add -A && git commit -m "..." && git push`
+— Pages se reconstruit tout seul en une minute.
 
 ---
 
