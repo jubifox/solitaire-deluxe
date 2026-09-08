@@ -32,11 +32,18 @@ et **ouverture de caisses façon CS:GO** avec raretés, roulette, ticker et doub
 - Score type Klondike, chrono, compteur de coups.
 
 ### Le « juice » (animations)
-Distribution carte par carte, retournement 3D, oscillation permanente des cartes,
-survol avec inclinaison et halo, écrasement/étirement à l'atterrissage, secousse de refus,
-étincelles, anneaux d'énergie, popups de score, **compteur d'enchaînement** qui monte,
-secousses d'écran progressives, flashs, vignette réactive, particules d'ambiance selon le fond,
-confettis, feux d'artifice et **cascade de cartes rebondissantes** à la victoire.
+- **Cartes** : distribution en cloche carte par carte, tout déplacement suit un arc avec
+  rotation et changement d'échelle, retournement 3D avec éclat, oscillation permanente,
+  survol qui soulève et incline en 3D, **reflet spéculaire qui suit le curseur** sur la carte,
+  écrasement/étirement à l'atterrissage, secousse de refus, inclinaison selon la vitesse de glissement.
+- **Décor** : **parallaxe** du fond et du tapis à la souris, particules d'ambiance propres au fond
+  (pétales, poussière, étoiles), vignette qui chauffe, aura animée autour du dos quand un dos
+  Mythique ou mieux est équipé.
+- **Retour d'action** : étincelles, anneaux d'énergie, popups de score, compteurs qui roulent,
+  **compteur d'enchaînement** qui monte et déforme le plateau, secousses d'écran progressives
+  (3 intensités), flashs, onde au clic sur les boutons.
+- **Victoire** : confettis, feux d'artifice et **cascade de cartes rebondissantes** avec physique.
+
 Trois niveaux d'intensité : **Sobre / Normal / Max** (Options).
 
 Tous les sons sont **synthétisés à la volée** (Web Audio) : zéro fichier audio.

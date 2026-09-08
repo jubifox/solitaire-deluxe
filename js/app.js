@@ -33,7 +33,13 @@ var App = (function(){
   /* ---------- cosmétiques ---------- */
   function applyCosmetics(){
     var e = Store.state.equip;
-    document.body.className = [e.bg, e.mat, e.skin, e.sleeve, 'juice-'+Store.opts().juice].join(' ');
+    var cls = [e.bg, e.mat, e.skin, e.sleeve, 'juice-'+Store.opts().juice];
+    var sl = ITEM_BY_ID[e.sleeve];
+    if (sl && RARITY_ORDER.indexOf(sl.rarity) >= 3){
+      cls.push('aura');
+      document.body.style.setProperty('--aura', RARITY[sl.rarity].color);
+    } else document.body.style.removeProperty('--aura');
+    document.body.className = cls.join(' ');
     FX.ambient(e.bg);
   }
 

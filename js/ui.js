@@ -41,8 +41,8 @@ var UI = (function(){
       }
       h += '</div>';
     }
-    h += '<div class="sheen"></div></div>';
-    h += '<div class="face back"></div>';
+    h += '<div class="sheen"></div><div class="glare"></div></div>';
+    h += '<div class="face back"><div class="glare"></div></div>';
     return h;
   }
 
@@ -168,6 +168,37 @@ var UI = (function(){
     S.zones = z;
   }
 
+  /* ---------------- deplacements en cloche ---------------- */
+  function clonePos(){
+    var o = {};
+    for (var k in S.pos) o[k] = {x:S.pos[k].x, y:S.pos[k].y};
+    return o;
+  }
+  function prepArc(ids){
+    ids.forEach(function(id){ S.cardEl[id].classList.add('notrans'); });
+  }
+  /* fait voler les cartes de leur position precedente vers la nouvelle */
+  function arcMove(ids, prev, lift, stagger){
+    ids.forEach(function(id, i){
+      var el = S.cardEl[id], a = prev[id], b = S.pos[id];
+      if (!a || !b || Math.abs(b.x-a.x) + Math.abs(b.y-a.y) < 2){
+        el.classList.remove('notrans'); return;
+      }
+      var up = Math.max(26, S.geo.ch * (lift || 0.22));
+      var mx = (a.x+b.x)/2, my = Math.min(a.y,b.y) - up;
+      var rot = Math.max(-16, Math.min(16, (b.x-a.x)*0.05));
+      var z = el.style.zIndex;
+      el.style.zIndex = 8000 + i;
+      var an = el.animate([
+        {transform:'translate3d('+a.x+'px,'+a.y+'px,0) rotate(0deg)'},
+        {transform:'translate3d('+mx+'px,'+my+'px,0) rotate('+rot+'deg) scale(1.08)', offset:.5},
+        {transform:'translate3d('+b.x+'px,'+b.y+'px,0) rotate(0deg) scale(1)'}
+      ], {duration: 300 + i*(stagger===undefined?26:stagger), easing:'cubic-bezier(.32,.92,.35,1)'});
+      var done = function(){ el.classList.remove('notrans'); el.style.zIndex = z; };
+      an.onfinish = done; an.oncancel = done;
+    });
+  }
+
   /* ---------------- rendu ---------------- */
   function render(){
     var pos = positions(), G = S.game;
@@ -203,10 +234,16 @@ var UI = (function(){
   }
   function setStat(k, v){
     var el = S.el[k];
-    if (el.textContent !== String(v)){
-      el.textContent = v;
-      el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick');
-    }
+    var cur = parseInt(el.textContent, 10); if (isNaN(cur)) cur = 0;
+    if (cur === v) return;
+    el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick');
+    if (el._tw) cancelAnimationFrame(el._tw);
+    var t0 = performance.now(), d = Math.min(700, 200 + Math.abs(v-cur)*9);
+    (function roll(now){
+      var t = Math.min(1, (now-t0)/d);
+      el.textContent = Math.round(cur + (v-cur)*(1-Math.pow(1-t,3)));
+      if (t < 1) el._tw = requestAnimationFrame(roll);
+    })(t0);
   }
   function fmtTime(s){
     var m = Math.floor(s/60), r = s%60;
@@ -246,6 +283,10 @@ var UI = (function(){
       S.el.comboN.textContent = S.combo;
       S.el.combo.classList.remove('hit'); void S.el.combo.offsetWidth; S.el.combo.classList.add('hit');
       SFX.combo(S.combo);
+      if (Store.opts().juice > 0){
+        S.el.table.classList.remove('warp'); void S.el.table.offsetWidth;
+        S.el.table.classList.add('warp');
+      }
       if (S.combo >= 4) FX.hot(true);
     }
     if (S.combo > (S.bestCombo||0)) S.bestCombo = S.combo;
@@ -323,7 +364,7 @@ var UI = (function(){
   /* ---------------- actions ---------------- */
   function doDraw(){
     if (S.busy || S.won) return;
-    var before = S.game.stock.length;
+    var prev = clonePos();
     var res = S.game.drawStock();
     if (!res) return;
     kick();
@@ -339,14 +380,21 @@ var UI = (function(){
       var w = centerOf('waste'); var sw = boardToScreen(w);
       FX.burst(sw.x, sw.y, {n:7, speed:3.2, size:4, life:26, colors:['#ffffff'], glow:false});
     }
+    var ids = res.cards.map(function(c){ return c.id; });
+    prepArc(ids);
     render();
+    arcMove(ids, prev, 0.34, 55);
   }
 
-  function tryMove(ref, idx, to){
+  function tryMove(ref, idx, to, noArc){
+    var prev = clonePos();
     var res = S.game.move(ref, idx, to);
     if (!res) return false;
     kick();
+    var ids = res.group.map(function(c){ return c.id; });
+    if (!noArc) prepArc(ids);
     render();
+    if (!noArc) arcMove(ids, prev, to[0] === 'f' ? 0.32 : 0.2);
     afterMove(res);
     checkWin();
     return true;
@@ -473,7 +521,7 @@ var UI = (function(){
     });
     if (!d.moved){ clickCard(d.ref, d.idx); return; }
     var to = currentTarget(d, e.clientX - d.sx, e.clientY - d.sy);
-    if (to && tryMove(d.ref, d.idx, to)) return;
+    if (to && tryMove(d.ref, d.idx, to, true)) return;
     SFX.invalid();
     render();
   }
@@ -486,8 +534,12 @@ var UI = (function(){
     (function step(){
       var m = S.game.nextAuto();
       if (!m){ S.busy = false; render(); return; }
+      var prev = clonePos();
       var res = S.game.move(m.from, m.idx, m.to);
+      var ids = res ? res.group.map(function(c){ return c.id; }) : [];
+      prepArc(ids);
       render();
+      arcMove(ids, prev, 0.3);
       if (res) afterMove(res);
       if (S.game.isWon()){ S.busy = false; checkWin(); return; }
       setTimeout(step, 95);
@@ -608,11 +660,17 @@ var UI = (function(){
     order.forEach(function(cid, k){
       var el = S.cardEl[cid];
       setTimeout(function(){
-        el.classList.remove('notrans');
-        var p = S.pos[cid];
+        var p = S.pos[cid], ax = col(0), ay = g.oy;
         el.style.transform = 'translate3d('+p.x+'px,'+p.y+'px,0)';
-        el.style.zIndex = p.z;
+        el.style.zIndex = 3000 + k;
         el.classList.toggle('down', !S.game.cards[cid].up);
+        var an = el.animate([
+          {transform:'translate3d('+ax+'px,'+ay+'px,0) rotate(-7deg) scale(1.02)'},
+          {transform:'translate3d('+((ax+p.x)/2)+'px,'+(Math.min(ay,p.y)-g.ch*0.4)+'px,0) rotate('+((p.x-ax)*0.035)+'deg) scale(1.12)', offset:.5},
+          {transform:'translate3d('+p.x+'px,'+p.y+'px,0) rotate(0deg) scale(1)'}
+        ], {duration:440, easing:'cubic-bezier(.3,.92,.35,1)'});
+        var fin = function(){ el.classList.remove('notrans'); el.style.zIndex = p.z; };
+        an.onfinish = fin; an.oncancel = fin;
         if (k < 28){
           SFX.deal(0);
           var s = boardToScreen({x:p.x+g.cw/2, y:p.y+g.ch/2});
@@ -621,6 +679,31 @@ var UI = (function(){
       }, 26 + k*22);
     });
     setTimeout(function(){ render(); }, 26 + order.length*22 + 340);
+  }
+
+  /* ---------------- parallaxe et reflets ---------------- */
+  function bindPointerShine(){
+    var root = document.documentElement, queued = false, mx = 0, my = 0;
+    window.addEventListener('pointermove', function(e){
+      if (Store.opts().juice === 0) return;
+      mx = (e.clientX/innerWidth - .5)*2; my = (e.clientY/innerHeight - .5)*2;
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function(){
+        queued = false;
+        root.style.setProperty('--px', mx.toFixed(3));
+        root.style.setProperty('--py', my.toFixed(3));
+      });
+    }, {passive:true});
+
+    S.el.cards.addEventListener('pointermove', function(e){
+      if (Store.opts().juice === 0) return;
+      var el = e.target.closest ? e.target.closest('.card') : null;
+      if (!el) return;
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100).toFixed(1)+'%');
+      el.style.setProperty('--my', ((e.clientY-r.top)/r.height*100).toFixed(1)+'%');
+    }, {passive:true});
   }
 
   /* ---------------- cycle de vie ---------------- */
@@ -655,6 +738,7 @@ var UI = (function(){
     };
     S.onWin = opts.onWin; S.onCoin = opts.onCoin;
     makeSlots();
+    bindPointerShine();
     var b = S.el.board;
     b.addEventListener('pointerdown', onDown);
     window.addEventListener('pointermove', onMove, {passive:true});

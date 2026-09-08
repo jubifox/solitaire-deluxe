@@ -134,3 +134,47 @@ body.juice-0 .pop{animation-duration:.6s}
 body.juice-0 .bpip{animation:none}
 body.juice-2 .card.hoverable:hover .inner{transform:translateY(-14px) scale(1.09) rotateX(13deg)}
 body.juice-2 .pop{font-size:30px}
+
+/* ---- reflet qui suit le curseur sur la carte ---- */
+.face .glare{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;
+  transition:opacity .25s;mix-blend-mode:screen;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),
+    rgba(255,255,255,.42),rgba(255,255,255,.12) 26%,transparent 56%)}
+.card.hoverable:hover .glare{opacity:1}
+.card.lift .glare{opacity:.85}
+body.juice-0 .glare{display:none}
+
+/* ---- parallaxe du décor et du tapis ---- */
+body:not(.juice-0) #bg.bgsurface{
+  transform:translate3d(calc(var(--px,0)*18px),calc(var(--py,0)*13px),0) scale(1.08);
+  transition:transform .55s cubic-bezier(.2,.8,.3,1)}
+body:not(.juice-0) .matsurface{
+  transform:translate3d(calc(var(--px,0)*-6px),calc(var(--py,0)*-4px),0);
+  transition:transform .55s cubic-bezier(.2,.8,.3,1)}
+.prev .bgsurface,.prev .matsurface{transform:none!important}
+
+/* ---- déformation du plateau sur enchaînement ---- */
+#table.warp{animation:warp .6s cubic-bezier(.2,.9,.3,1)}
+@keyframes warp{
+  0%{transform:scale(1.022) rotate(.35deg);filter:saturate(1.35) brightness(1.06)}
+  55%{transform:scale(.997) rotate(-.14deg)}
+  100%{transform:none;filter:none}}
+
+/* ---- aura de rareté du dos équipé ---- */
+body.aura .card.down .face.back{
+  box-shadow:0 0 22px -3px var(--aura,#fff),0 3px 10px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.25);
+  animation:auraPulse 2.6s ease-in-out infinite}
+@keyframes auraPulse{
+  0%,100%{box-shadow:0 0 16px -5px var(--aura,#fff),0 3px 10px rgba(0,0,0,.45)}
+  50%{box-shadow:0 0 32px 0 var(--aura,#fff),0 3px 10px rgba(0,0,0,.45)}}
+body.juice-0.aura .card.down .face.back{animation:none}
+
+/* ---- onde au clic sur les boutons ---- */
+.btn,.tab,.chip{position:relative;overflow:hidden}
+.btn::after,.tab::after,.chip::after{content:"";position:absolute;left:50%;top:50%;
+  width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.55);
+  transform:translate(-50%,-50%) scale(0);opacity:0;pointer-events:none}
+.btn:active:not(:disabled)::after,.tab:active::after,.chip:active::after{animation:ripple .55s ease-out}
+@keyframes ripple{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:.55}
+  100%{transform:translate(-50%,-50%) scale(26);opacity:0}}
