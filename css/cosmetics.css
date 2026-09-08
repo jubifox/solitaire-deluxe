@@ -1,0 +1,179 @@
+/* ============ Cosmetics : sleeves / skins / mats / backgrounds ============ */
+
+/* ---------------- SLEEVES (dos de cartes) ---------------- */
+.sleeve-rouge .back{background:
+  repeating-linear-gradient(45deg,#a5182a 0 6px,#8c1220 6px 12px),
+  #8c1220}
+.sleeve-azur .back{background:
+  repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 5px,transparent 5px 10px),
+  repeating-linear-gradient(-45deg,rgba(255,255,255,.16) 0 5px,transparent 5px 10px),
+  linear-gradient(160deg,#1c5fa8,#0d2c58)}
+.sleeve-ivy .back{background:
+  radial-gradient(circle at 25% 25%,rgba(190,255,200,.28) 0 12%,transparent 13%),
+  radial-gradient(circle at 75% 75%,rgba(190,255,200,.28) 0 12%,transparent 13%),
+  repeating-linear-gradient(0deg,rgba(0,0,0,.13) 0 8px,transparent 8px 16px),
+  linear-gradient(150deg,#1f6b48,#0b2c1e)}
+.sleeve-tartan .back{background:
+  repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 4px,transparent 4px 14px),
+  repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 4px,transparent 4px 14px),
+  repeating-linear-gradient(0deg,rgba(255,220,150,.28) 0 2px,transparent 2px 28px),
+  linear-gradient(140deg,#8a6a35,#513c1c)}
+.sleeve-encre .back{background:
+  radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.18),transparent 55%),
+  repeating-radial-gradient(circle at 50% 120%,rgba(255,255,255,.1) 0 8px,transparent 8px 20px),
+  linear-gradient(160deg,#20304a,#080d18)}
+.sleeve-circuit .back{background:
+  repeating-linear-gradient(90deg,rgba(0,255,208,.34) 0 1px,transparent 1px 14px),
+  repeating-linear-gradient(0deg,rgba(0,255,208,.34) 0 1px,transparent 1px 14px),
+  radial-gradient(circle at 50% 50%,rgba(0,255,208,.3),transparent 62%),
+  #04141a;
+  box-shadow:inset 0 0 22px rgba(0,255,208,.35)}
+.sleeve-mandala .back{background:
+  repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.2) 0 2px,transparent 2px 11px),
+  conic-gradient(from 0deg at 50% 50%,#6d28d9,#c026d3,#6d28d9,#c026d3,#6d28d9),
+  #4c1d95}
+.sleeve-nebuleuse .back{background:
+  radial-gradient(circle at 20% 30%,rgba(255,255,255,.9) 0 1px,transparent 2px),
+  radial-gradient(circle at 70% 20%,rgba(255,255,255,.8) 0 1px,transparent 2px),
+  radial-gradient(circle at 45% 70%,rgba(255,255,255,.85) 0 1px,transparent 2px),
+  radial-gradient(circle at 85% 65%,rgba(255,255,255,.7) 0 1px,transparent 2px),
+  radial-gradient(ellipse at 35% 45%,rgba(122,64,255,.7),transparent 60%),
+  radial-gradient(ellipse at 70% 60%,rgba(255,64,160,.55),transparent 55%),
+  linear-gradient(160deg,#140b2e,#05030f)}
+.sleeve-dragon .back{background:
+  radial-gradient(circle at 50% 0,rgba(255,255,255,.16) 0 42%,transparent 43%) 0 0/14px 12px,
+  radial-gradient(circle at 50% 0,rgba(0,0,0,.4) 0 46%,transparent 47%) 7px 6px/14px 12px,
+  linear-gradient(150deg,#0f6b5c,#04231f)}
+.sleeve-holo .back{background:
+  linear-gradient(115deg,#ff5f6d,#ffc371,#5ee7df,#b490ca,#ff5f6d);
+  background-size:340% 340%;animation:holoshift 6s linear infinite}
+@keyframes holoshift{0%{background-position:0% 50%}100%{background-position:340% 50%}}
+.sleeve-inferno .back{background:
+  radial-gradient(ellipse at 50% 115%,#fff3b0 0 6%,#ffb703 18%,#ff5400 38%,#8a1c00 68%,#2a0600 100%);
+  background-size:150% 150%;animation:infernopulse 2.4s ease-in-out infinite}
+@keyframes infernopulse{0%,100%{background-position:50% 60%}50%{background-position:50% 40%}}
+.sleeve-inferno .back::before{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(76deg,rgba(255,190,60,.24) 0 3px,transparent 3px 9px);
+  animation:infernoscroll 1.6s linear infinite}
+@keyframes infernoscroll{to{transform:translateY(-9px)}}
+.sleeve-or .back{background:
+  repeating-linear-gradient(52deg,#fff6cf 0 6px,#ffd76e 6px 12px,#c9962a 12px 19px,#ffd76e 19px 25px);
+  background-size:220% 220%;animation:goldshift 4.5s ease-in-out infinite}
+@keyframes goldshift{0%,100%{background-position:0 0}50%{background-position:100% 100%}}
+.sleeve-or .back::after{border-color:rgba(80,50,0,.5)}
+
+/* ---------------- SKINS (faces) ---------------- */
+.skin-classic .front{--cardbg:linear-gradient(170deg,#fffdf7,#f2ece0);--ink:#1a1c24;--inkred:#c62828}
+.skin-papier .front{--cardbg:linear-gradient(160deg,#f5e9cf,#e2cfa6);--ink:#3b2f21;--inkred:#a63d20;
+  --cardborder:rgba(90,60,20,.3);--courtborder:rgba(90,60,20,.35);--cardfont:Georgia,serif}
+.skin-papier .front::after{content:"";position:absolute;inset:0;z-index:1;opacity:.35;pointer-events:none;
+  background:repeating-linear-gradient(93deg,rgba(120,80,30,.09) 0 2px,transparent 2px 5px)}
+.skin-mono .front{--cardbg:linear-gradient(160deg,#fafafa,#e6e6e6);--ink:#14161a;--inkred:#5c626e;
+  --cardborder:rgba(0,0,0,.3);--courtbg:linear-gradient(160deg,#14161a,#333);--courtborder:#14161a}
+.skin-mono .court{color:#fafafa}
+.skin-givre .front{--cardbg:linear-gradient(155deg,#eaf6ff,#c2e2f5);--ink:#0f3550;--inkred:#0a6fa8;
+  --cardborder:rgba(120,200,255,.6);--courtbg:linear-gradient(160deg,rgba(255,255,255,.75),rgba(160,220,255,.3));
+  --courtborder:rgba(140,215,255,.8)}
+.skin-givre .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5;
+  background:radial-gradient(circle at 15% 10%,rgba(255,255,255,.9),transparent 26%),
+             radial-gradient(circle at 85% 88%,rgba(255,255,255,.85),transparent 24%)}
+.skin-neon .front{--cardbg:linear-gradient(165deg,#12132a,#05060f);--ink:#5ef2ff;--inkred:#ff4fa3;
+  --cardborder:rgba(94,242,255,.45);--courtbg:linear-gradient(160deg,rgba(94,242,255,.12),transparent);
+  --courtborder:rgba(94,242,255,.5)}
+.skin-neon .front{text-shadow:0 0 9px currentColor}
+.skin-neon .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 4px)}
+.skin-sakura .front{--cardbg:linear-gradient(165deg,#fff6f8,#ffdfe9);--ink:#5b2340;--inkred:#e0578c;
+  --cardborder:rgba(224,87,140,.4);--courtbg:linear-gradient(160deg,rgba(255,255,255,.8),rgba(255,190,215,.35));
+  --courtborder:rgba(224,87,140,.45);--cardfont:"Segoe UI",serif}
+.skin-cyber .front{--cardbg:linear-gradient(160deg,#0d1f1c,#04100f);--ink:#c6ff4f;--inkred:#ff9f1c;
+  --cardborder:rgba(198,255,79,.5);--courtbg:linear-gradient(160deg,rgba(198,255,79,.12),transparent);
+  --courtborder:rgba(198,255,79,.55);--cardfont:Consolas,"Segoe UI",monospace}
+.skin-cyber .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(90deg,rgba(198,255,79,.13) 0 1px,transparent 1px 8px)}
+.skin-royal .front{--cardbg:linear-gradient(160deg,#fff8e2,#f0dca6);--ink:#3b2c05;--inkred:#a3141b;
+  --cardborder:rgba(180,140,40,.7);--courtbg:linear-gradient(160deg,#ffd76e,#c9962a);--courtborder:#8c6a18}
+.skin-royal .front::after{content:"";position:absolute;inset:2px;z-index:1;pointer-events:none;border-radius:inherit;
+  border:1px solid rgba(180,140,40,.5)}
+.skin-royal .court{color:#2c1f02;box-shadow:0 0 18px rgba(255,200,80,.6) inset}
+
+/* ---------------- MATS (tapis) ---------------- */
+.mat-feutre .matsurface{background:
+  radial-gradient(ellipse at 50% 22%,#2f8f5e 0%,#166b43 45%,#083a24 100%);
+  box-shadow:inset 0 0 160px rgba(0,0,0,.6)}
+.mat-feutre .matsurface::after,.matsurface::after{content:"";position:absolute;inset:0;opacity:.16;
+  background-image:radial-gradient(circle at 50% 50%,rgba(255,255,255,.5) 0 .5px,transparent 1px);
+  background-size:4px 4px}
+.mat-ardoise .matsurface{background:
+  linear-gradient(160deg,#39414f,#171b23 70%);
+  box-shadow:inset 0 0 160px rgba(0,0,0,.65)}
+.mat-bordeaux .matsurface{background:
+  radial-gradient(ellipse at 50% 25%,#7e1f33,#3d0d1a 70%);
+  box-shadow:inset 0 0 150px rgba(0,0,0,.6)}
+.mat-ocean .matsurface{background:
+  radial-gradient(ellipse at 50% 20%,#1a7fa8,#062a45 72%);
+  box-shadow:inset 0 0 150px rgba(0,0,0,.55)}
+.mat-chene .matsurface{background:
+  repeating-linear-gradient(92deg,rgba(60,32,10,.42) 0 3px,transparent 3px 12px),
+  repeating-linear-gradient(88deg,rgba(255,210,150,.09) 0 2px,transparent 2px 26px),
+  linear-gradient(160deg,#8a5a2b,#4a2d12);
+  box-shadow:inset 0 0 150px rgba(0,0,0,.55)}
+.mat-grille .matsurface{background:
+  repeating-linear-gradient(0deg,rgba(0,240,255,.16) 0 1px,transparent 1px 44px),
+  repeating-linear-gradient(90deg,rgba(0,240,255,.16) 0 1px,transparent 1px 44px),
+  radial-gradient(ellipse at 50% 40%,#0b2b3b,#03070f 72%)}
+.mat-velours .matsurface{background:
+  radial-gradient(ellipse at 50% 18%,#6a2ea8,#25093f 72%);
+  box-shadow:inset 0 0 170px rgba(0,0,0,.6)}
+.mat-velours .matsurface::before{content:"";position:absolute;inset:0;opacity:.3;
+  background:repeating-linear-gradient(115deg,rgba(255,255,255,.09) 0 2px,transparent 2px 7px)}
+.mat-lave .matsurface{background:
+  radial-gradient(ellipse at 50% 120%,#ffb703 0 6%,#ff5400 20%,#7a1500 46%,#1a0602 78%);
+  background-size:170% 170%;animation:lavamove 9s ease-in-out infinite}
+@keyframes lavamove{0%,100%{background-position:50% 100%}50%{background-position:50% 78%}}
+.mat-lave .matsurface::before{content:"";position:absolute;inset:0;opacity:.35;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.5) 0 6px,transparent 6px 15px)}
+
+/* ---------------- BACKGROUNDS (fonds) ---------------- */
+.bg-studio .bgsurface{background:radial-gradient(ellipse at 50% -10%,#232a3a,#0a0c12 65%)}
+.bg-crepuscule .bgsurface{background:linear-gradient(180deg,#2b1055,#7597de 45%,#ff9a76 78%,#2b1030)}
+.bg-foret .bgsurface{background:
+  linear-gradient(180deg,#0c2b1e,#061410 60%),
+  radial-gradient(ellipse at 50% 0,rgba(160,255,200,.16),transparent 60%)}
+.bg-foret .bgsurface::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(97deg,rgba(0,0,0,.35) 0 26px,transparent 26px 90px);opacity:.5}
+.bg-aurore .bgsurface{background:linear-gradient(180deg,#020617,#04121f 60%,#020617)}
+.bg-aurore .bgsurface::before,.bg-aurore .bgsurface::after{content:"";position:absolute;inset:-25%;
+  background:conic-gradient(from 210deg at 50% 50%,transparent,rgba(0,255,170,.35),rgba(80,120,255,.3),transparent 62%);
+  filter:blur(48px);animation:aurora 14s ease-in-out infinite alternate}
+.bg-aurore .bgsurface::after{animation-duration:19s;animation-direction:alternate-reverse;opacity:.7}
+@keyframes aurora{0%{transform:translate(-8%,-6%) rotate(-8deg) scale(1.1)}
+  100%{transform:translate(9%,7%) rotate(11deg) scale(1.3)}}
+.bg-skyline .bgsurface{background:
+  linear-gradient(180deg,#120a2a 0%,#3a0f52 45%,#7a1550 72%,#12060f 100%)}
+.bg-skyline .bgsurface::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;
+  background:repeating-linear-gradient(90deg,#07030d 0 26px,transparent 26px 34px,#07030d 34px 70px,transparent 70px 82px);
+  mask-image:linear-gradient(0deg,#000 45%,transparent);-webkit-mask-image:linear-gradient(0deg,#000 45%,transparent)}
+.bg-galaxie .bgsurface{background:
+  radial-gradient(ellipse at 22% 28%,rgba(120,60,255,.35),transparent 55%),
+  radial-gradient(ellipse at 76% 62%,rgba(255,60,160,.28),transparent 52%),
+  linear-gradient(180deg,#05030f,#0a0518)}
+.bg-galaxie .bgsurface::after{content:"";position:absolute;inset:0;
+  background-image:radial-gradient(circle,#fff 0 1px,transparent 1.4px);
+  background-size:120px 120px;opacity:.55;animation:twinkle 5s ease-in-out infinite alternate}
+.bg-galaxie .bgsurface::before{content:"";position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,.7) 0 1px,transparent 1.4px);
+  background-size:47px 61px;opacity:.35;animation:twinkle 3.2s .6s ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.22}to{opacity:.7}}
+.bg-sakura .bgsurface{background:linear-gradient(180deg,#2b1226,#5a2447 40%,#a24d6e 80%,#e0879c)}
+.bg-vapor .bgsurface{background:linear-gradient(180deg,#1a0b3d 0%,#4c1d6f 40%,#ff2d95 62%,#ffb35c 100%)}
+.bg-vapor .bgsurface::after{content:"";position:absolute;left:-50%;right:-50%;bottom:0;height:52%;
+  background:repeating-linear-gradient(0deg,rgba(0,255,240,.6) 0 2px,transparent 2px 40px),
+             repeating-linear-gradient(90deg,rgba(0,255,240,.6) 0 2px,transparent 2px 60px);
+  transform:perspective(300px) rotateX(72deg);transform-origin:bottom;
+  animation:vaporscroll 1.9s linear infinite}
+@keyframes vaporscroll{to{background-position:0 40px,0 0}}
+.bg-vapor .bgsurface::before{content:"";position:absolute;left:50%;top:16%;width:34vh;height:34vh;
+  transform:translateX(-50%);border-radius:50%;
+  background:linear-gradient(180deg,#fff3b0,#ff2d95 60%,#7a1550);
+  box-shadow:0 0 90px rgba(255,45,149,.55);opacity:.9}

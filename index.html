@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Solitaire Deluxe — Portable</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/cards.css">
+<link rel="stylesheet" href="css/cosmetics.css">
+<link rel="stylesheet" href="css/case.css">
+<link rel="stylesheet" href="css/juice.css">
+</head>
+<body class="bg-studio mat-feutre skin-classic sleeve-rouge">
+
+<div id="bg" class="bgsurface"></div>
+<div id="bgfx"></div>
+<div id="shaker">
+
+  <header id="topbar">
+    <div class="brand"><span class="bpip">&#9824;</span>Solitaire<b>Deluxe</b></div>
+    <nav class="tabs">
+      <button class="tab is-active" data-view="game">Jouer</button>
+      <button class="tab" data-view="cases">Caisses</button>
+      <button class="tab" data-view="inv">Inventaire</button>
+      <button class="tab" data-view="stats">Stats</button>
+    </nav>
+    <div class="topright">
+      <div class="coins" id="coinbox"><span class="coinico">&#9679;</span><span id="coinval">0</span></div>
+      <button class="iconbtn" id="btn-settings" title="Options">&#9881;</button>
+    </div>
+  </header>
+
+  <section class="view is-active" id="view-game">
+    <div id="table">
+      <div class="matsurface"></div>
+      <div id="board">
+        <div id="slots"></div>
+        <div id="cards"></div>
+        <div id="popups"></div>
+      </div>
+      <div id="combo"><div class="combo-x">x<span id="combo-n">2</span></div><div class="combo-lbl">ENCHA&Icirc;NEMENT</div></div>
+    </div>
+    <div id="hud">
+      <div class="stat"><i>Coups</i><b id="hud-moves">0</b></div>
+      <div class="stat"><i>Temps</i><b id="hud-time">0:00</b></div>
+      <div class="stat"><i>Score</i><b id="hud-score">0</b></div>
+      <div class="stat"><i>Donne</i><b id="hud-seed">#0</b></div>
+      <div class="spacer"></div>
+      <button id="btn-undo" class="btn">&#8630; Annuler</button>
+      <button id="btn-hint" class="btn">&#128161; Indice</button>
+      <button id="btn-auto" class="btn" disabled>&#9889; Auto</button>
+      <button id="btn-restart" class="btn">&#8635; Rejouer</button>
+      <button id="btn-new" class="btn primary">Nouvelle partie</button>
+    </div>
+  </section>
+
+  <section class="view" id="view-cases">
+    <div class="viewwrap">
+      <h2 class="vtitle">Caisses</h2>
+      <p class="vsub">Gagne des pi&egrave;ces en jouant, ouvre des caisses, collectionne les cosm&eacute;tiques.</p>
+      <div id="caselist" class="caselist"></div>
+      <div class="oddsbox" id="oddsbox"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-inv">
+    <div class="viewwrap">
+      <h2 class="vtitle">Inventaire</h2>
+      <div class="filters" id="invfilters">
+        <button class="chip is-active" data-f="all">Tout</button>
+        <button class="chip" data-f="sleeve">Dos de cartes</button>
+        <button class="chip" data-f="skin">Jeux de cartes</button>
+        <button class="chip" data-f="mat">Tapis</button>
+        <button class="chip" data-f="bg">Fonds</button>
+        <span class="fspacer"></span>
+        <label class="switch"><input type="checkbox" id="onlyowned"><span>Poss&eacute;d&eacute;s uniquement</span></label>
+      </div>
+      <div id="invgrid" class="invgrid"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-stats">
+    <div class="viewwrap">
+      <h2 class="vtitle">Statistiques</h2>
+      <div id="statgrid" class="statgrid"></div>
+      <h3 class="vtitle small">Collection</h3>
+      <div id="collbars" class="collbars"></div>
+    </div>
+  </section>
+
+</div>
+
+<canvas id="fx"></canvas>
+<div id="flash"></div>
+<div id="vignette"></div>
+
+<div class="modal" id="modal-open">
+  <div class="modal-bd"></div>
+  <div class="modal-card case-modal">
+    <h3 id="open-title">Caisse</h3>
+    <div class="reel-viewport" id="reelvp">
+      <div class="reel" id="reel"></div>
+      <div class="ticker"></div>
+      <div class="reelglow"></div>
+    </div>
+    <div class="reveal" id="reveal"></div>
+    <div class="modal-actions">
+      <button class="btn" id="open-close">Fermer</button>
+      <button class="btn primary" id="open-again">Rouvrir</button>
+      <button class="btn gold" id="open-equip">&Eacute;quiper</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-win">
+  <div class="modal-bd"></div>
+  <div class="modal-card win-modal">
+    <div class="wintitle">VICTOIRE&nbsp;!</div>
+    <div id="winstats" class="winstats"></div>
+    <div class="reward" id="winreward"></div>
+    <div class="modal-actions">
+      <button class="btn" id="win-close">Voir le tapis</button>
+      <button class="btn primary" id="win-new">Nouvelle partie</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-settings">
+  <div class="modal-bd"></div>
+  <div class="modal-card">
+    <h3>Options</h3>
+    <div class="optrow"><span>Pioche</span>
+      <div class="seg" id="opt-draw"><button data-v="1">1 carte</button><button data-v="3">3 cartes</button></div>
+    </div>
+    <div class="optrow"><span>Intensit&eacute; des effets</span>
+      <div class="seg" id="opt-juice"><button data-v="0">Sobre</button><button data-v="1">Normal</button><button data-v="2">Max</button></div>
+    </div>
+    <div class="optrow"><span>Sons</span><label class="switch"><input type="checkbox" id="opt-sound" checked><span></span></label></div>
+    <div class="optrow"><span>Secousses d'&eacute;cran</span><label class="switch"><input type="checkbox" id="opt-shake" checked><span></span></label></div>
+    <div class="optrow"><span>Ouverture rapide des caisses</span><label class="switch"><input type="checkbox" id="opt-fastcase"><span></span></label></div>
+    <div class="optrow"><span>Sauvegarde portable</span>
+      <div class="btnrow"><button class="btn sm" id="opt-export">Exporter</button><button class="btn sm" id="opt-import">Importer</button><button class="btn sm danger" id="opt-reset">R&eacute;initialiser</button></div>
+    </div>
+    <input type="file" id="importfile" accept="application/json" hidden>
+    <div class="modal-actions"><button class="btn primary" id="settings-close">Fermer</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/store.js"></script>
+<script src="js/sfx.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/klondike.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/cases.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
