@@ -37,6 +37,10 @@ Klondike.prototype.deal = function(){
   this.f = [[],[],[],[]];
   this.score = 0; this.moves = 0; this.recycles = 0;
   this.history = [];
+  this.reveal = [];        /* cartes revelees depuis le stock, dans lordre */
+  this.revealCount = 0;    /* compteur monotone de reveals */
+  this.frozen = [];        /* cartes mises de cote par le Gel */
+  this.freeColor = false;  /* Flux libre : la contrainte de couleur saute */
 };
 
 Klondike.prototype.pile = function(ref){
@@ -53,7 +57,9 @@ Klondike.prototype.top = function(ref){
 Klondike.prototype.snap = function(){
   var enc = function(p){ return p.map(function(c){ return c.id*2 + (c.up?1:0); }); };
   return {t:this.t.map(enc), s:enc(this.stock), w:enc(this.waste), f:this.f.map(enc),
-          sc:this.score, mv:this.moves, rc:this.recycles};
+          sc:this.score, mv:this.moves, rc:this.recycles,
+          rv:this.reveal.map(function(c){ return c.id; }), rn:this.revealCount, fz:enc(this.frozen),
+          fc:this.freeColor, x:this.onSnap ? this.onSnap() : null};
 };
 Klondike.prototype.restore = function(sn){
   var self = this;
@@ -62,6 +68,11 @@ Klondike.prototype.restore = function(sn){
   this.t = sn.t.map(dec); this.stock = dec(sn.s); this.waste = dec(sn.w);
   this.f = sn.f.map(dec);
   this.score = sn.sc; this.moves = sn.mv; this.recycles = sn.rc;
+  this.reveal = (sn.rv||[]).map(function(id){ return self.cards[id]; });
+  this.revealCount = sn.rn||0;
+  this.frozen = dec(sn.fz||[]);
+  this.freeColor = !!sn.fc;
+  if (this.onRestore) this.onRestore(sn.x);
 };
 Klondike.prototype.push = function(){
   this.history.push(this.snap());
@@ -82,9 +93,56 @@ Klondike.prototype.canDrop = function(card, ref){
   }
   if (ref[0] === 't'){
     if (!t) return card.r === 13;
-    return t.up && isRed(t.s) !== isRed(card.s) && t.r === card.r + 1;
+    if (!t.up || t.r !== card.r + 1) return false;
+    return this.freeColor || isRed(t.s) !== isRed(card.s);
   }
   return false;
+};
+
+/* ---------- outils du mode Conjonction ---------- */
+/* met la prochaine carte du stock de cote (Gel) */
+Klondike.prototype.freezeNext = function(){
+  if (!this.stock.length) return null;
+  this.push();
+  var c = this.stock.pop(); c.up = false;
+  this.frozen.push(c);
+  return c;
+};
+/* remet une carte gelee au sommet du stock */
+Klondike.prototype.unfreeze = function(id){
+  var i = this.frozen.findIndex ? this.frozen.findIndex(function(c){ return c.id === id; }) : -1;
+  if (i < 0) for (i=0;i<this.frozen.length;i++) if (this.frozen[i].id === id) break;
+  if (i >= this.frozen.length) return null;
+  this.push();
+  var c = this.frozen.splice(i,1)[0];
+  this.stock.push(c);
+  return c;
+};
+/* echange les deux prochaines cartes du stock (Ordre) */
+Klondike.prototype.swapNext = function(){
+  var n = this.stock.length;
+  if (n < 2) return false;
+  this.push();
+  var a = this.stock[n-1];
+  this.stock[n-1] = this.stock[n-2];
+  this.stock[n-2] = a;
+  return true;
+};
+/* Ascension : extrait une carte visible, meme enfouie, vers sa fondation */
+Klondike.prototype.extractToFoundation = function(ref, idx){
+  if (ref[0] !== 't') return null;
+  var p = this.pile(ref), c = p[idx];
+  if (!c || !c.up) return null;
+  var target = null;
+  for (var i=0;i<4;i++) if (this.canDrop(c, 'f'+i)) { target = 'f'+i; break; }
+  if (!target) return null;
+  this.push();
+  p.splice(idx, 1);
+  this.f[+target[1]].push(c);
+  var flipped = null;
+  if (p.length && !p[p.length-1].up){ p[p.length-1].up = true; flipped = p[p.length-1]; this.score += 5; }
+  this.score += 10; this.moves++;
+  return {group:[c], flipped:flipped, gain:10, toFoundation:true, from:ref, to:target, extracted:true};
 };
 
 /* une séquence déplaçable : cartes face visible, alternées et décroissantes */
@@ -117,7 +175,12 @@ Klondike.prototype.drawStock = function(){
     return res;
   }
   var n = Math.min(this.drawCount, this.stock.length);
-  for (var i=0;i<n;i++){ var k = this.stock.pop(); k.up = true; this.waste.push(k); res.cards.push(k); }
+  for (var i=0;i<n;i++){
+    var k = this.stock.pop(); k.up = true; this.waste.push(k);
+    res.cards.push(k);
+    this.reveal.push(k); this.revealCount++;
+  }
+  if (this.reveal.length > 24) this.reveal.splice(0, this.reveal.length - 24);
   this.moves++;
   return res;
 };

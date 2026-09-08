@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="css/cosmetics.css">
 <link rel="stylesheet" href="css/case.css">
 <link rel="stylesheet" href="css/juice.css">
+<link rel="stylesheet" href="css/dense.css">
 </head>
 <body class="bg-studio mat-feutre skin-classic sleeve-rouge">
 
@@ -33,6 +34,7 @@
   </header>
 
   <section class="view is-active" id="view-game">
+    <div id="densebar" class="off"></div>
     <div id="table">
       <div class="matsurface"></div>
       <div id="board">
@@ -131,6 +133,9 @@
   <div class="modal-bd"></div>
   <div class="modal-card">
     <h3>Options</h3>
+    <div class="optrow"><span>Mode de jeu<br><small style="color:#7d8798">Conjonction ajoute Élan, objectifs et déclenchements rares</small></span>
+      <div class="seg" id="opt-mode"><button data-v="conj">Conjonction</button><button data-v="classic">Classique</button></div>
+    </div>
     <div class="optrow"><span>Pioche</span>
       <div class="seg" id="opt-draw"><button data-v="1">1 carte</button><button data-v="3">3 cartes</button></div>
     </div>
@@ -155,7 +160,9 @@
 <script src="js/sfx.js"></script>
 <script src="js/fx.js"></script>
 <script src="js/klondike.js"></script>
+<script src="js/dense.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/denseui.js"></script>
 <script src="js/cases.js"></script>
 <script src="js/app.js"></script>
 </body>

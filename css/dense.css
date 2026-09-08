@@ -1,0 +1,145 @@
+/* ============ Mode Conjonction : bandeau, conjonction, objectifs ============ */
+
+#densebar{
+  flex:0 0 auto;display:flex;align-items:center;gap:14px;padding:7px 16px;overflow-x:auto;
+  background:linear-gradient(180deg,rgba(12,15,24,.9),rgba(12,15,24,.55));
+  border-bottom:1px solid rgba(255,255,255,.08);scrollbar-width:none}
+#densebar::-webkit-scrollbar{display:none}
+#densebar.off{display:none}
+.db-block{display:flex;align-items:center;gap:9px;padding:4px 12px;border-radius:12px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);white-space:nowrap}
+.db-block>i{font-style:normal;font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:#7d8798}
+
+/* ---- Élan ---- */
+.db-pips{display:flex;gap:3px}
+.db-pip{width:9px;height:16px;border-radius:3px;background:rgba(255,255,255,.1);
+  transition:background .3s,box-shadow .3s,transform .3s cubic-bezier(.2,1.8,.4,1)}
+.db-pip.on{background:linear-gradient(180deg,#8ef0ff,#2fb6d9);box-shadow:0 0 9px rgba(80,220,255,.75)}
+.db-pip.pop{animation:pipPop .45s cubic-bezier(.2,1.8,.4,1)}
+@keyframes pipPop{0%{transform:scaleY(.3);opacity:.3}55%{transform:scaleY(1.5)}100%{transform:none}}
+.db-elan b{font-size:16px;color:#9beeff;font-variant-numeric:tabular-nums;min-width:22px;text-align:right}
+.db-elan.full b{color:#ffd76e}
+
+/* ---- multiplicateur ---- */
+.db-mult b{font-size:17px;font-weight:900;font-style:italic;
+  background:linear-gradient(180deg,#fff,#ffd76e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.db-mult.hot b{background:linear-gradient(180deg,#fff,#ff8f3f 50%,#ff2d95);-webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(0 0 10px rgba(255,120,60,.9));animation:multThrob .7s ease-in-out infinite}
+@keyframes multThrob{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+/* ---- fenêtre de conjonction ---- */
+.db-slots{display:flex;gap:5px}
+.db-slot{width:30px;height:38px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);
+  color:#8d97a9;transition:.25s}
+.db-slot.filled{color:#eef1f7;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25)}
+.db-slot.red{color:#ff8080}
+.db-slot.match{border-color:#ffd76e;box-shadow:0 0 12px rgba(255,190,80,.7);
+  background:linear-gradient(180deg,rgba(255,215,110,.22),rgba(255,140,60,.1))}
+.db-conj.ready .db-slot{animation:slotReady .8s ease-in-out infinite}
+@keyframes slotReady{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+/* ---- cartes à venir (Vision) ---- */
+.db-next .chips{display:flex;gap:4px}
+.db-chip{padding:3px 7px;border-radius:6px;font-size:12px;font-weight:800;
+  background:rgba(94,242,255,.12);border:1px solid rgba(94,242,255,.35);color:#9beeff}
+.db-chip.red{color:#ffa0b4;background:rgba(255,120,150,.12);border-color:rgba(255,120,150,.35)}
+.db-chip.frozen{background:rgba(160,220,255,.18);border-color:#9beeff;cursor:pointer}
+.db-chip.frozen:hover{transform:translateY(-2px)}
+.db-empty{font-size:11.5px;color:#5f6878;font-style:italic}
+
+/* ---- objectifs ---- */
+.db-obj{position:relative;display:flex;flex-direction:column;gap:2px;padding:5px 12px;border-radius:12px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);min-width:150px;overflow:hidden}
+.db-obj .on{font-size:12.5px;font-weight:700;white-space:nowrap}
+.db-obj .op{font-size:10.5px;color:#8d97a9;font-variant-numeric:tabular-nums}
+.db-obj .bar{position:absolute;left:0;bottom:0;height:3px;background:linear-gradient(90deg,#7ee6a8,#2fbf71);
+  transition:width .5s cubic-bezier(.2,1,.2,1)}
+.db-obj.done{border-color:rgba(126,230,168,.6);box-shadow:0 0 16px -6px #7ee6a8}
+.db-obj.done .on::after{content:" ✓";color:#7ee6a8}
+.db-obj.lost{opacity:.45}
+.db-obj.lost .bar{background:#ff6b6b}
+
+/* ---- actions d'Élan ---- */
+.db-actions{display:flex;gap:6px;margin-left:auto}
+.db-act{display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:11px;cursor:pointer;
+  background:rgba(94,242,255,.08);border:1px solid rgba(94,242,255,.25);color:#cfeeff;
+  font:inherit;font-size:12.5px;white-space:nowrap;
+  transition:transform .15s cubic-bezier(.2,1.7,.4,1),background .2s,opacity .2s}
+.db-act:hover:not(:disabled){transform:translateY(-2px) scale(1.05);background:rgba(94,242,255,.18)}
+.db-act:active:not(:disabled){transform:scale(.94)}
+.db-act:disabled{opacity:.32;cursor:default}
+.db-act .cost{font-weight:900;color:#9beeff}
+.db-act.armed{background:linear-gradient(160deg,#ffd76e,#ff8f3f);color:#20160a;border-color:transparent;
+  animation:armed .9s ease-in-out infinite}
+@keyframes armed{0%,100%{box-shadow:0 0 0 0 rgba(255,190,80,.6)}50%{box-shadow:0 0 0 7px rgba(255,190,80,0)}}
+
+/* ============ déclenchement rare ============ */
+#conjfx{position:fixed;inset:0;z-index:120;display:none;pointer-events:none;overflow:hidden}
+#conjfx.on{display:block}
+#conjfx .veil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,.55),rgba(0,0,0,.93) 72%);
+  animation:veilIn .5s ease-out}
+@keyframes veilIn{from{opacity:0}to{opacity:1}}
+#conjfx .title{position:absolute;left:50%;top:24%;transform:translateX(-50%);text-align:center;white-space:nowrap}
+#conjfx .title .big{font-size:min(6.4vw,58px);font-weight:900;font-style:italic;letter-spacing:-1.5px;
+  background:linear-gradient(180deg,#fff,#ffd76e 45%,#ff5f6d);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 26px rgba(255,170,60,.95));animation:conjTitle .9s cubic-bezier(.2,1.7,.3,1)}
+@keyframes conjTitle{0%{opacity:0;transform:scale(.4) rotate(-8deg)}60%{transform:scale(1.14) rotate(2deg)}100%{opacity:1;transform:none}}
+#conjfx .title .sub{margin-top:6px;font-size:13px;letter-spacing:5px;color:#ffd0a0;text-transform:uppercase;
+  animation:fadein .8s .3s backwards}
+
+/* pluie d'étoiles filantes */
+.shoot{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;
+  box-shadow:0 0 8px 2px rgba(255,255,255,.9);animation:shootFall linear forwards}
+.shoot::after{content:"";position:absolute;right:0;top:0;width:120px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,235,190,.95));transform-origin:right center;transform:rotate(35deg)}
+@keyframes shootFall{
+  0%{transform:translate3d(0,0,0);opacity:0}
+  8%{opacity:1}
+  100%{transform:translate3d(-70vw,90vh,0);opacity:0}}
+
+/* choix de la règle temporaire */
+.boons{display:flex;gap:14px;margin-top:6px;flex-wrap:wrap}
+.boon{flex:1 1 190px;min-width:180px;text-align:left;padding:16px;border-radius:16px;cursor:pointer;
+  background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.13);color:inherit;font:inherit;
+  transition:transform .2s cubic-bezier(.2,1.5,.4,1),box-shadow .2s,border-color .2s;
+  animation:invin .45s cubic-bezier(.2,1.3,.3,1) backwards}
+.boon:hover{transform:translateY(-6px) scale(1.035);border-color:rgba(255,215,110,.65);
+  box-shadow:0 18px 40px -18px #ffb347}
+.boon .bi{font-size:30px;line-height:1}
+.boon .bn{font-size:16px;font-weight:800;margin:8px 0 5px}
+.boon .bd{font-size:12.5px;color:#a9b3c5;line-height:1.45}
+.boon .bx{display:inline-block;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:1px;
+  padding:4px 9px;border-radius:7px;background:rgba(255,215,110,.16);color:#ffe6a3}
+
+/* fenêtre d'opportunité active */
+#winbadge{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:960;pointer-events:none;
+  display:none;align-items:center;gap:10px;padding:8px 18px;border-radius:14px;
+  background:linear-gradient(160deg,rgba(255,215,110,.95),rgba(255,120,60,.9));color:#20160a;
+  font-weight:900;box-shadow:0 14px 40px -12px rgba(255,150,60,.85)}
+#winbadge.on{display:flex;animation:badgeIn .45s cubic-bezier(.2,1.7,.3,1)}
+@keyframes badgeIn{from{opacity:0;transform:translate(-50%,-18px) scale(.8)}to{opacity:1;transform:translateX(-50%)}}
+#winbadge .wb-left{font-variant-numeric:tabular-nums;padding:2px 9px;border-radius:8px;background:rgba(0,0,0,.28);color:#fff8e2}
+body.conj-window #table{box-shadow:inset 0 0 0 2px rgba(255,215,110,.55),inset 0 0 90px rgba(255,170,60,.28)}
+body.conj-window .matsurface{filter:saturate(1.25) brightness(1.08)}
+
+/* liaison de résonance entre deux colonnes */
+.reso{position:absolute;height:3px;border-radius:3px;pointer-events:none;z-index:850;
+  background:linear-gradient(90deg,rgba(126,230,168,0),rgba(126,230,168,.95),rgba(126,230,168,0));
+  box-shadow:0 0 14px rgba(126,230,168,.8);animation:resoPulse 1.6s ease-in-out infinite}
+@keyframes resoPulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* colonne lourde */
+.slot.heavy,.card.heavy .face{box-shadow:0 0 0 1px rgba(255,140,80,.5),0 3px 10px rgba(0,0,0,.45)}
+.heavytag{position:absolute;z-index:870;pointer-events:none;font-size:10px;font-weight:800;letter-spacing:.5px;
+  padding:2px 7px;border-radius:7px;background:rgba(255,120,60,.9);color:#2a1000}
+
+/* carte éligible à l'Ascension */
+body.ascension-armed .card.hoverable{cursor:crosshair}
+body.ascension-armed .card.ascendable .face{box-shadow:0 0 0 2px #7ee6a8,0 0 26px rgba(126,230,168,.8);
+  animation:hintpulse 1s ease-in-out infinite}
+
+/* popups spécifiques au mode */
+.pop.elan{color:#9beeff;text-shadow:0 0 14px rgba(120,230,255,.8),0 3px 10px rgba(0,0,0,.75)}
+.card.reso-glow .face{box-shadow:0 0 0 2px rgba(126,230,168,.85),0 0 24px rgba(126,230,168,.55),0 3px 10px rgba(0,0,0,.45)}

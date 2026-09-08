@@ -140,15 +140,39 @@ var App = (function(){
     var timeBonus = Math.max(0, Math.round(ECON.timeBonusMax * (1 - info.time/600)));
     var base = ECON.winBase + 52*ECON.perFoundationCard + timeBonus;
     if (UI.game.drawCount === 3) base = Math.round(base*1.25);
+
+    /* mode Conjonction : les objectifs remplis paient */
+    var objs = Dense.active ? Dense.objectivesState() : [];
+    var okCount = objs.filter(function(o){ return o.done; }).length;
+    var objBonus = okCount * 220;
+    base += objBonus;
+
     Store.addCoins(base);
     refreshCoins(true);
 
+    var extra = '';
+    if (Dense.active){
+      extra = '<div><i>Mult max</i><b>x'+Dense.state.multPeak.toFixed(1)+'</b></div>'+
+              '<div><i>Conjonctions</i><b>'+Dense.state.conjCount+'</b></div>';
+    }
     $('winstats').innerHTML =
       '<div><i>Temps</i><b>'+fmtTime(info.time)+'</b></div>'+
       '<div><i>Coups</i><b>'+info.moves+'</b></div>'+
       '<div><i>Score</i><b>'+info.score+'</b></div>'+
-      '<div><i>Combo max</i><b>x'+info.combo+'</b></div>';
-    $('winreward').innerHTML = '+ ' + base + ' &#9679;';
+      '<div><i>Combo max</i><b>x'+info.combo+'</b></div>' + extra;
+
+    var objHtml = '';
+    if (objs.length){
+      objHtml = '<div style="margin:14px 0 4px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
+        objs.map(function(o){
+          return '<span style="padding:6px 13px;border-radius:10px;font-size:12.5px;font-weight:700;'+
+                 (o.done ? 'background:rgba(126,230,168,.16);border:1px solid rgba(126,230,168,.5);color:#a9f0c6'
+                         : 'background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#8d97a9')+'">'+
+                 (o.done?'✓ ':'✕ ')+o.def.name+'</span>';
+        }).join('') + '</div>';
+    }
+    $('winreward').innerHTML = objHtml + '+ ' + base + ' &#9679;' +
+      (objBonus ? '<div style="font-size:13px;color:#a9f0c6;font-weight:700;margin-top:4px">dont +'+objBonus+' pour '+okCount+' objectif'+(okCount>1?'s':'')+'</div>' : '');
     $('modal-win').classList.add('on');
     refreshStats();
   }
@@ -163,6 +187,7 @@ var App = (function(){
   function syncOptions(){
     var o = Store.opts();
     document.querySelectorAll('#opt-draw button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v === o.draw); });
+    document.querySelectorAll('#opt-mode button').forEach(function(b){ b.classList.toggle('on', b.dataset.v === o.mode); });
     document.querySelectorAll('#opt-juice button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v === o.juice); });
     $('opt-sound').checked = o.sound;
     $('opt-shake').checked = o.shake;
@@ -232,6 +257,12 @@ var App = (function(){
       b.addEventListener('click', function(){
         Store.setOpt('draw', +b.dataset.v); syncOptions(); SFX.click();
         toast('Pioche ' + b.dataset.v + ' — appliqué à la prochaine partie');
+      });
+    });
+    document.querySelectorAll('#opt-mode button').forEach(function(b){
+      b.addEventListener('click', function(){
+        Store.setOpt('mode', b.dataset.v); syncOptions(); SFX.click();
+        toast('Mode ' + (b.dataset.v === 'conj' ? 'Conjonction' : 'Classique') + ' — appliqué à la prochaine partie');
       });
     });
     document.querySelectorAll('#opt-juice button').forEach(function(b){

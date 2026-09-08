@@ -34,6 +34,31 @@ et **ouverture de caisses façon CS:GO** avec raretés, roulette, ticker et doub
 - Annuler illimité, **indice**, **auto-complétion**, rejouer la même donne (numéro de donne affiché).
 - Score type Klondike, chrono, compteur de coups.
 
+### Mode Conjonction — densité stratégique
+Un second mode (actif par défaut, désactivable dans les Options) qui densifie la prise de décision
+**sans aucune progression entre parties** : tout est remis à zéro à chaque donne.
+
+- **Élan** — ressource gagnée en construisant (1 toutes les 4 cartes de fondation, 1 par nouvelle suite
+  ordonnée, 2 par colonne vidée), plafonnée à 8 pour que le surplus soit perdu et pousse à dépenser.
+  Quatre dépenses : **Vision** (voir les 3 prochaines cartes, savoir conservé), **Ordre** (permuter
+  les deux prochaines), **Gel** (mettre une carte de côté et la réinjecter au bon moment),
+  **Licence** (la prochaine pose ignore la couleur).
+- **Conjonction** — les 3 dernières cartes révélées forment un motif : trois rangs consécutifs (×3),
+  trois figures (×4), trois fois le même rang (×6), trois figures du même rang (×8). L'événement est
+  **préparable** avec Vision / Ordre / Gel : c'est là que se joue la planification.
+  Il ouvre une fenêtre de 3 à 5 coups avec une règle temporaire au choix :
+  **Flux libre** (couleurs ignorées), **Ascension** (une carte enfouie part directement en fondation),
+  **Surcharge** (multiplicateur de score décuplé).
+- **Interactions spatiales** — **Résonance** (deux colonnes voisines de rangs consécutifs : la prochaine
+  suite rapporte le double) et **colonne lourde** (≥ 11 cartes : déplacer un *groupe* coûte 1 Élan ;
+  déplacer une carte seule reste toujours gratuit, donc aucun blocage n'est possible).
+- **Objectifs concurrents** — deux objectifs tirés en début de partie, filtrés pour ne jamais se
+  contredire, visibles en permanence, payés en pièces à la victoire.
+- **Chaînes** — chaque nouvelle suite ordonnée augmente le multiplicateur (+0.1 à +0.3, plafond ×3).
+
+Mesuré sur 250 parties simulées : **3,1 conjonctions par partie**, 15 % de parties sans aucune,
+6 Élan gagnés par partie pour un plafond de 8 — chaque dépense reste un arbitrage.
+
 ### Le « juice » (animations)
 - **Cartes** : distribution en cloche carte par carte, tout déplacement suit un arc avec
   rotation et changement d'échelle, retournement 3D avec éclat, oscillation permanente,

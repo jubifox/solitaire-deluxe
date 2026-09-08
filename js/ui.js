@@ -223,7 +223,14 @@ var UI = (function(){
       S.slotEl[ref].style.opacity = empty ? 1 : 0.001;
     });
     S.slotEl.stock.style.opacity = G.stock.length ? 0.001 : 1;
+    /* cartes hors piles (gelées) : invisibles et inertes */
+    for (var cid in S.cardEl){
+      var ce = S.cardEl[cid], has = !!pos[cid];
+      ce.style.opacity = has ? '' : '0';
+      ce.style.pointerEvents = has ? '' : 'none';
+    }
     updateHUD();
+    if (Dense.active && window.DenseUI) DenseUI.refresh();
   }
 
   function updateHUD(){
@@ -384,9 +391,24 @@ var UI = (function(){
     prepArc(ids);
     render();
     arcMove(ids, prev, 0.34, 55);
+    if (Dense.active) Dense.onDraw(res);
   }
 
   function tryMove(ref, idx, to, noArc){
+    /* mode Conjonction : une colonne lourde coûte de lElan pour un GROUPE.
+       Une carte seule reste toujours gratuite -> aucun blocage possible. */
+    var mc = null;
+    if (Dense.active){
+      var grp = S.game.movableFrom(ref, idx);
+      if (grp){
+        mc = Dense.moveCost(ref, grp.length);
+        if (!mc.ok){
+          App.toast(mc.reason);
+          wiggle(grp.map(function(c){ return c.id; }));
+          return false;
+        }
+      }
+    }
     var prev = clonePos();
     var res = S.game.move(ref, idx, to);
     if (!res) return false;
@@ -395,7 +417,27 @@ var UI = (function(){
     if (!noArc) prepArc(ids);
     render();
     if (!noArc) arcMove(ids, prev, to[0] === 'f' ? 0.32 : 0.2);
+    if (Dense.active){ Dense.payMoveCost(mc); Dense.onMove(res); updateHUD(); }
     afterMove(res);
+    checkWin();
+    return true;
+  }
+
+  /* Ascension : extraire une carte visible enfouie vers sa fondation */
+  function tryAscension(ref, idx){
+    if (!Dense.active || !Dense.state.ascension || ref[0] !== 't') return false;
+    var prev = clonePos();
+    var res = S.game.extractToFoundation(ref, idx);
+    if (!res) return false;
+    Dense.state.ascension = false;
+    kick();
+    var ids = [res.group[0].id];
+    prepArc(ids);
+    render();
+    arcMove(ids, prev, 0.5);
+    Dense.onMove(res); updateHUD();
+    afterMove(res);
+    FX.flash(true); FX.shake(3);
     checkWin();
     return true;
   }
@@ -403,6 +445,7 @@ var UI = (function(){
   function clickCard(ref, idx){
     if (S.busy || S.won) return;
     if (ref === 'stock'){ doDraw(); return; }
+    if (tryAscension(ref, idx)) return;
     var group = S.game.movableFrom(ref, idx);
     if (!group){ wiggle([S.game.pile(ref)[idx].id]); return; }
     var to = S.game.autoTarget(ref, idx, true);
@@ -540,6 +583,7 @@ var UI = (function(){
       prepArc(ids);
       render();
       arcMove(ids, prev, 0.3);
+      if (res && Dense.active){ Dense.onMove(res); updateHUD(); }
       if (res) afterMove(res);
       if (S.game.isWon()){ S.busy = false; checkWin(); return; }
       setTimeout(step, 95);
@@ -714,6 +758,7 @@ var UI = (function(){
     S.el.time.textContent = '0:00';
     S.el.combo.classList.remove('on');
     FX.hot(false);
+    if (window.DenseUI) DenseUI.newGame(S.game, S.game.seed);
     makeCards();
     layout();
     dealAnimation();
@@ -762,6 +807,12 @@ var UI = (function(){
     undo:undo, hint:hint, autoComplete:autoComplete, draw:doDraw,
     get game(){ return S.game; },
     get elapsed(){ return S.elapsed; },
+    geo: function(){ return S.geo; },
+    popAt: function(ref, text, cls){
+      if (!S.geo || !ref) return;
+      var c = centerOf(ref);
+      FX.pop(text, c.x, c.y - S.geo.ch*0.42, cls || 'good');
+    },
     setDraw: function(n){ if (S.game) S.game.drawCount = n; }
   };
 })();

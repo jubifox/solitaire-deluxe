@@ -13,7 +13,7 @@ var Store = (function(){
       owned: owned,
       equip: JSON.parse(JSON.stringify(DEFAULT_EQUIP)),
       stats: {games:0, wins:0, bestTime:0, bestScore:0, cases:0, moves:0, bestCombo:0, earned:0},
-      opts: {draw:1, juice:1, sound:true, shake:true, fastcase:false}
+      opts: {draw:1, juice:1, sound:true, shake:true, fastcase:false, mode:'conj'}
     };
   }
 
