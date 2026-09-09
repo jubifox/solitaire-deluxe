@@ -2,50 +2,19 @@
 var UI = (function(){
 
   var REFS = ['stock','waste','f0','f1','f2','f3','t0','t1','t2','t3','t4','t5','t6'];
-  var PIPMAP = {
-    1:[[1,3]],
-    2:[[1,0],[1,6]],
-    3:[[1,0],[1,3],[1,6]],
-    4:[[0,0],[2,0],[0,6],[2,6]],
-    5:[[0,0],[2,0],[1,3],[0,6],[2,6]],
-    6:[[0,0],[2,0],[0,3],[2,3],[0,6],[2,6]],
-    7:[[0,0],[2,0],[1,1.5],[0,3],[2,3],[0,6],[2,6]],
-    8:[[0,0],[2,0],[1,1.5],[0,3],[2,3],[1,4.5],[0,6],[2,6]],
-    9:[[0,0],[2,0],[0,2],[2,2],[1,3],[0,4],[2,4],[0,6],[2,6]],
-    10:[[0,0],[2,0],[1,1],[0,2],[2,2],[0,4],[2,4],[1,5],[0,6],[2,6]]
-  };
-
   var S = {
     game:null, el:{}, cardEl:{}, slotEl:{}, geo:{}, zones:[],
     drag:null, combo:0, comboT:0, timer:null, elapsed:0, started:false,
-    busy:false, won:false, onWin:null, onCoin:null, hintT:null
+    busy:false, won:false, onWin:null, onCoin:null, hintT:null, idxLevel:1
   };
 
-  /* ---------------- construction ---------------- */
-  function buildCardFace(c){
-    var red = isRed(c.s), sc = SUIT_CHAR[c.s], rc = RANK_CHAR[c.r];
-    var h = '<div class="face front '+(red?'red':'black')+'">';
-    h += '<div class="corner tl"><span class="r">'+rc+'</span><span class="s">'+sc+'</span></div>';
-    h += '<div class="corner br"><span class="r">'+rc+'</span><span class="s">'+sc+'</span></div>';
-    if (c.r >= 11){
-      h += '<div class="court"><div class="cl">'+rc+'</div><div class="cs">'+sc+'</div></div>';
-    } else {
-      h += '<div class="pips">';
-      var map = PIPMAP[c.r] || [];
-      for (var i=0;i<map.length;i++){
-        var col = map[i][0], row = map[i][1];
-        var x = col*50, y = row/6*100;
-        var flip = row > 3 ? ' flip' : '';
-        var big = c.r === 1 ? ' big' : '';
-        h += '<span class="pip'+flip+big+'" style="left:'+x+'%;top:'+y+'%">'+sc+'</span>';
-      }
-      h += '</div>';
-    }
-    h += '<div class="sheen"></div><div class="glare"></div></div>';
-    h += '<div class="face back"><div class="glare"></div></div>';
-    return h;
-  }
+  /* Etalement vise et minimum tolere, par niveau de lisibilite : cale pile
+     sur la hauteur de l'index, de sorte qu'une carte recouverte montre sa
+     valeur en entier et rien de plus. */
+  var FANUP = [0.29, 0.305, 0.335], FAN_DN = 0.115;
+  var UPMIN = [0.235, 0.262, 0.292];
 
+  /* ---------------- construction ---------------- */
   function makeCards(){
     var host = S.el.cards;
     host.innerHTML = ''; S.cardEl = {};
@@ -57,7 +26,7 @@ var UI = (function(){
       el.style.setProperty('--sway', (0.35 + Math.random()*0.9).toFixed(2)+'deg');
       el.style.setProperty('--swayd', (2.8 + Math.random()*2.4).toFixed(2)+'s');
       el.style.setProperty('--swayo', (-Math.random()*3).toFixed(2)+'s');
-      el.innerHTML = '<div class="inner">' + buildCardFace(c) + '</div>';
+      el.innerHTML = '<div class="inner">' + CardArt.cardHTML(c) + '</div>';
       el._id = c.id;
       host.appendChild(el);
       S.cardEl[c.id] = el;
@@ -69,60 +38,131 @@ var UI = (function(){
     host.innerHTML = ''; S.slotEl = {};
     REFS.forEach(function(ref){
       var d = document.createElement('div');
-      d.className = 'slot' + (ref[0]==='f' ? ' f-ring' : '');
+      d.className = 'slot' + (ref[0]==='f' ? ' f-ring fs'+ref[1] : '') +
+                    (ref === 'stock' ? ' stockslot' : '');
       d.dataset.ref = ref;
-      if (ref[0] === 'f') d.innerHTML = SUIT_CHAR[+ref[1]];
-      if (ref === 'stock') d.innerHTML = '↻';
+      if (ref[0] === 'f') d.innerHTML = CardArt.suit(+ref[1]);
+      if (ref === 'stock') d.innerHTML = '<span class="stockico">&#8635;</span>';
       host.appendChild(d);
       S.slotEl[ref] = d;
     });
   }
 
   /* ---------------- géométrie ---------------- */
+  /* Metriques de la colonne la plus exigeante : nombre de decalages
+     "carte visible" et "carte cachee" a prevoir sous la premiere carte. */
+  function tallest(){
+    var best = {nu:0, nd:0, f:-1};
+    if (!S.game) return best;
+    for (var i=0;i<7;i++){
+      var p = S.game.t[i], nu = 0, nd = 0;
+      for (var j=0;j<p.length-1;j++){ if (p[j].up) nu++; else nd++; }
+      var f = nu*FANUP[S.idxLevel] + nd*FAN_DN;
+      if (f > best.f) best = {nu:nu, nd:nd, f:f};
+    }
+    return best;
+  }
+
+  /* Largeur de carte la plus grande qui garde la colonne la plus longue
+     entierement etalee : c'est ce qui rend chaque valeur lisible. */
+  function fitCW(W, H){
+    var pad = 22;
+    var gap = Math.max(7, Math.min(18, W*0.013));
+    var rowGap = Math.max(10, gap*1.3);
+    var oyEst = Math.max(pad*0.7, gap*1.6);
+    var byWidth = (W - pad*2 - gap*6) / 7;
+    var byRows  = (H - pad*2) / (1.4*2.4);
+    var byFan   = (H - 14 - oyEst - rowGap) / (1.4 * (2 + tallest().f));
+    var cw = Math.min(140, byWidth, byRows, byFan);
+    cw = Math.max(58, cw);
+    cw = Math.min(cw, Math.max(48, byWidth));       // jamais plus large que la place dispo
+    return Math.round(cw/2)*2;                      // pas de 2px : evite le tremblement
+  }
+
   function layout(){
     var t = S.el.table;
     var W = t.clientWidth, H = t.clientHeight;
+    S.vp = {W:W, H:H};
     var pad = 22;                       // marge interieure du tapis
-    var gap = Math.max(7, Math.min(18, W*0.013));
-    var cw = (W - pad*2 - gap*6) / 7;
-    cw = Math.min(cw, 140);
-    if (cw*1.4*2.4 > H - pad*2) cw = (H - pad*2) / (1.4*2.4);
-    cw = Math.max(48, cw);
+    var gap0 = Math.max(7, Math.min(18, W*0.013));
+    var cw = fitCW(W, H);
     var ch = cw*1.4;
 
+    /* quand les cartes sont bridees par la hauteur, on repartit la largeur
+       restante entre les colonnes plutot que de laisser le tapis a moitie vide */
+    var gap = Math.max(gap0, Math.min(cw*0.45, ((W - pad*2)*0.86 - 7*cw)/6));
+
     var ox = (W - (7*cw + 6*gap))/2;
-    var oy = Math.max(pad*0.7, Math.min(gap*1.6, (H - ch*2.3)/2));
-    var y1 = oy + ch + Math.max(10, gap*1.3);
+    var oy = Math.max(pad*0.7, Math.min(gap0*1.6, (H - ch*2.3)/2));
+    var y1 = oy + ch + Math.max(10, gap0*1.3);
 
     S.geo = {W:W,H:H,cw:cw,ch:ch,gap:gap,ox:ox,oy:oy,y1:y1,
-             wasteFan: cw*0.26, fanUp: ch*0.285, fanDown: ch*0.115};
+             wasteFan: cw*0.30, fanUp: ch*FANUP[S.idxLevel], fanDown: ch*FAN_DN};
 
     S.el.board.style.setProperty('--cw', cw+'px');
     S.el.board.style.setProperty('--ch', ch+'px');
 
     // placement des emplacements vides
-    var g = S.geo;
     place(S.slotEl.stock, col(0), oy);
     place(S.slotEl.waste, col(1), oy);
     for (var i=0;i<4;i++) place(S.slotEl['f'+i], col(3+i), oy);
     for (i=0;i<7;i++) place(S.slotEl['t'+i], col(i), y1);
   }
+
+  /* la taille utile change quand une colonne s'allonge : on reajuste */
+  function refit(){
+    if (!S.game || !S.vp) return;
+    if (Math.abs(fitCW(S.vp.W, S.vp.H) - S.geo.cw) > 2) layout();
+  }
+
   function col(i){ return S.geo.ox + i*(S.geo.cw + S.geo.gap); }
   function place(el, x, y){ el.style.transform = 'translate3d('+x+'px,'+y+'px,0)'; }
 
+  /* Repartition verticale des piles.
+     On resserre en priorite les cartes face cachee : les cartes retournees
+     gardent au minimum la hauteur de leur index, donc la valeur reste lisible
+     meme sur une colonne de treize cartes ou sur un ecran bas. */
   function computeFan(){
-    var g = S.geo, up = g.fanUp, dn = g.fanDown, worst = 0;
-    for (var i=0;i<7;i++){
-      var p = S.game.t[i], s = 0;
-      for (var j=0;j<p.length-1;j++) s += p[j].up ? up : dn;
-      if (s > worst) worst = s;
+    var g = S.geo, G = S.game;
+    var up = g.fanUp, dn = g.fanDown;
+    var upMin = g.ch * UPMIN[S.idxLevel], dnMin = g.ch * 0.05;
+    var avail = g.H - g.y1 - g.ch - 14;
+    var cols = [], i, j, p, nu, nd;
+    for (i=0;i<7;i++){
+      p = G.t[i]; nu = 0; nd = 0;
+      for (j=0;j<p.length-1;j++){ if (p[j].up) nu++; else nd++; }
+      cols.push([nu, nd]);
     }
-    var avail = g.H - g.y1 - g.ch - 18;
-    if (worst > avail && worst > 0){
-      var k = Math.max(0.3, avail / worst);
-      up *= k; dn *= k;
+    function worst(u, d){
+      var m = 0;
+      for (var k=0;k<7;k++){ var s = cols[k][0]*u + cols[k][1]*d; if (s > m) m = s; }
+      return m;
     }
-    return {up:up, dn:dn};
+    if (avail <= 0 || worst(up, dn) <= avail) return {up:up, dn:dn};
+
+    /* 1 - on tasse les cartes face cachee */
+    var d2 = dn, v, k2;
+    for (k2=0;k2<7;k2++){
+      if (!cols[k2][1]) continue;
+      v = (avail - cols[k2][0]*up) / cols[k2][1];
+      if (v < d2) d2 = v;
+    }
+    d2 = Math.max(dnMin, Math.min(dn, d2));
+    if (worst(up, d2) <= avail) return {up:up, dn:d2};
+
+    /* 2 - puis les cartes visibles, sans passer sous la hauteur de l'index */
+    var u2 = up;
+    for (k2=0;k2<7;k2++){
+      if (!cols[k2][0]) continue;
+      v = (avail - cols[k2][1]*dnMin) / cols[k2][0];
+      if (v < u2) u2 = v;
+    }
+    u2 = Math.max(upMin, Math.min(up, u2));
+    if (worst(u2, dnMin) <= avail) return {up:u2, dn:dnMin};
+
+    /* 3 - dernier recours : compression proportionnelle */
+    var w = worst(u2, dnMin), f = w > 0 ? Math.max(0.3, avail / w) : 1;
+    return {up:u2*f, dn:dnMin*f};
   }
 
   /* position de chaque carte : {id:{x,y,z,ref,idx}} */
@@ -201,6 +241,7 @@ var UI = (function(){
 
   /* ---------------- rendu ---------------- */
   function render(){
+    refit();
     var pos = positions(), G = S.game;
     for (var id in S.cardEl){
       var el = S.cardEl[id], p = pos[id], c = G.cards[id];
@@ -813,6 +854,12 @@ var UI = (function(){
       var c = centerOf(ref);
       FX.pop(text, c.x, c.y - S.geo.ch*0.42, cls || 'good');
     },
-    setDraw: function(n){ if (S.game) S.game.drawCount = n; }
+    setDraw: function(n){ if (S.game) S.game.drawCount = n; },
+    setIndexLevel: function(n){
+      n = Math.max(0, Math.min(2, n|0));
+      if (n === S.idxLevel) return;
+      S.idxLevel = n;
+      if (S.game){ layout(); render(); }
+    }
   };
 })();

@@ -59,6 +59,28 @@ Un second mode (actif par défaut, désactivable dans les Options) qui densifie 
 Mesuré sur 250 parties simulées : **3,1 conjonctions par partie**, 15 % de parties sans aucune,
 6 Élan gagnés par partie pour un plafond de 8 — chaque dépense reste un arbitrage.
 
+### Lisibilité et rendu des cartes
+Les cartes sont entièrement redessinées en **vectoriel** (SVG inline + CSS), sans aucune image :
+les enseignes ♠ ♥ ♦ ♣ sont des tracés maison, nettes à toute taille, identiques d'un navigateur
+à l'autre — plus de glyphes Unicode qui changent de forme selon la police du système.
+
+- **Index géant et toujours visible** : la valeur et l'enseigne sont posées **à l'horizontale**
+  en haut de carte. L'étalement des colonnes est calé exactement sur la hauteur de cet index,
+  donc une carte recouverte montre sa valeur **en entier** — même sur une colonne de treize cartes.
+- **Taille de carte adaptative** : la largeur des cartes est recalculée en continu pour que la
+  colonne la plus longue tienne à l'écran sans écraser les valeurs. Quand la place manque, ce sont
+  d'abord les cartes **face cachée** qui se resserrent, jamais les valeurs qu'on doit lire.
+- **Trois niveaux de lisibilité** (Options → *Lisibilité des cartes*) : Standard / Grand / Géant.
+  Le plateau se réorganise pour rester lisible dans les trois cas.
+- **Jeu à 4 couleurs** (Options) : ♠ noir, ♥ rouge, ♦ **bleu**, ♣ **vert** — on distingue
+  l'enseigne d'un coup d'œil, sans lire le symbole.
+- **Figures dessinées** : valet à la toque emplumée, dame au diadème, roi couronné et barbu,
+  en cartouche miroir encadré de deux enseignes ornementales.
+- **As** ornés d'une enseigne centrale sur rosace, **dos** avec médaillon guilloché,
+  **emplacements vides** gravés au filigrane de leur enseigne, feutre à surpiqûre.
+- Chaque jeu de cartes définit sa propre encre par enseigne, sa teinte de papier et son cadre :
+  les 8 jeux restent lisibles, y compris les jeux sombres (Néon Nocturne, Cyberdeck).
+
 ### Le « juice » (animations)
 - **Cartes** : distribution en cloche carte par carte, tout déplacement suit un arc avec
   rotation et changement d'échelle, retournement 3D avec éclat, oscillation permanente,
@@ -84,7 +106,8 @@ Tous les sons sont **synthétisés à la volée** (Web Audio) : zéro fichier au
 | Tapis | 8 | Feutre Vert, Chêne Massif, Grille Néon, Velours Royal, Coulée de Lave |
 | Fonds | 8 | Aurore Boréale, Skyline Néon, Voie Lactée, Pluie de Pétales, Vaporwave |
 
-Tout est dessiné en CSS pur (dégradés, motifs, animations) : **aucune image, aucune police externe**.
+Tout est dessiné en CSS et SVG (dégradés, motifs, tracés, animations) :
+**aucune image, aucune police externe**.
 
 ### Les caisses
 4 caisses (Découverte, Néon, Mystique, Prestige) avec des probabilités inspirées de CS:GO :
@@ -149,7 +172,7 @@ Solitaire-Deluxe/
 ├─ index.html                 # structure de l'application
 ├─ css/
 │  ├─ base.css                # interface, barres, fenêtres
-│  ├─ cards.css               # rendu des cartes (faces, pips, dos)
+│  ├─ cards.css               # rendu des cartes (index, enseignes, figures, dos)
 │  ├─ cosmetics.css           # les 36 cosmétiques
 │  ├─ case.css                # caisses et roulette
 │  └─ juice.css               # toutes les animations de feedback
@@ -159,7 +182,10 @@ Solitaire-Deluxe/
 │  ├─ sfx.js                  # sons synthétisés (Web Audio)
 │  ├─ fx.js                   # particules, secousses, flashs, ambiance
 │  ├─ klondike.js             # règles du jeu (pur, testable)
-│  ├─ ui.js                   # plateau, glisser-déposer, animations
+│  ├─ cardart.js              # enseignes SVG, faces, figures, dos
+│  ├─ dense.js                # mode Conjonction (règles)
+│  ├─ ui.js                   # plateau, géométrie adaptative, glisser-déposer
+│  ├─ denseui.js              # bandeau et fenêtres du mode Conjonction
 │  ├─ cases.js                # ouverture de caisses
 │  └─ app.js                  # assemblage, onglets, options
 ├─ Lancer-Solitaire.bat

@@ -59,7 +59,14 @@ body{
 #table{position:relative;flex:1 1 auto;min-height:0;overflow:hidden}
 .matsurface{position:absolute;inset:16px 18px;border-radius:22px;overflow:hidden;
   box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.07),inset 0 0 0 1px rgba(0,0,0,.4)}
+.matedge{position:absolute;inset:16px 18px;border-radius:22px;pointer-events:none;overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.11),
+             inset 0 0 0 7px rgba(0,0,0,.2),
+             inset 0 0 130px rgba(0,0,0,.4)}
+.matedge::after{content:"";position:absolute;inset:13px;border-radius:14px;
+  border:1px dashed rgba(255,255,255,.13)}
 #board{position:absolute;inset:0}
+.stockico{display:block;line-height:1;opacity:.85}
 #slots,#cards,#popups{position:absolute;inset:0}
 #popups{pointer-events:none;z-index:900}
 

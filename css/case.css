@@ -48,7 +48,7 @@
 .reelitem::before{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--rc)}
 .reelitem::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,var(--rc),transparent 62%);opacity:.32}
 .reelitem .prev{height:88px;width:100%;background:none}
-.reelitem .minicard{width:56px;height:79px;--cw:56px;--ch:79px;--rad:5px;animation:none;transform:rotate(-4deg)}
+.reelitem .minicard{width:60px;height:84px;--cw:60px;--ch:84px;--rad:5px;animation:none;transform:rotate(-4deg)}
 .reelitem .rn{font-size:11px;color:#cfd6e4;text-align:center;line-height:1.2;z-index:2;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .ticker{position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px;z-index:6;
@@ -69,8 +69,8 @@
   background:rgba(255,255,255,.03);opacity:0;transform:translateY(18px)}
 .reveal.on{animation:revealin .6s cubic-bezier(.2,1.5,.35,1) forwards}
 @keyframes revealin{to{opacity:1;transform:none}}
-.reveal .prev{width:110px;height:120px;flex:0 0 110px;background:none}
-.reveal .minicard{width:80px;height:113px;--rad:7px}
+.reveal .prev{width:124px;height:134px;flex:0 0 124px;background:none}
+.reveal .minicard{width:90px;height:126px;--cw:90px;--ch:126px;--rad:7px}
 .rvinfo{flex:1;min-width:0}
 .rvrar{font-size:12px;letter-spacing:2.6px;text-transform:uppercase;color:var(--rc);font-weight:800}
 .rvname{font-size:27px;font-weight:900;margin:3px 0 5px;letter-spacing:-.5px}

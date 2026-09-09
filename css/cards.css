@@ -1,75 +1,169 @@
-/* ============ Card rendering ============ */
-#board{--cw:104px;--ch:146px;--rad:calc(var(--cw)*.075);perspective:1400px}
+/* ============ Rendu des cartes ============
+   Toutes les tailles dérivent de --cw : les cartes restent nettes et lisibles
+   quelle que soit la résolution. L'index (valeur + enseigne) est posé à
+   l'horizontale en haut de carte pour rester entièrement visible même quand
+   les piles sont très resserrées. */
 
+#board{--cw:104px;--ch:146px;--rad:calc(var(--cw)*.085);perspective:1500px}
+/* --rkf : taille de la valeur, --pzf : taille des enseignes centrales,
+   --brk : reduction de l'index inferieur (jamais celui qu'on lit) */
+.front{--rkf:.30;--pzf:.205;--brk:.66}
+body.idx-0 .front{--rkf:.26;--pzf:.225}
+body.idx-2 .front{--rkf:.355;--pzf:.185}
+
+/* ---------------- emplacements vides ---------------- */
 .slot{position:absolute;width:var(--cw);height:var(--ch);border-radius:var(--rad);
-  border:2px solid rgba(255,255,255,.14);background:rgba(0,0,0,.16);
-  box-shadow:inset 0 2px 14px rgba(0,0,0,.35);
-  display:flex;align-items:center;justify-content:center;font-size:calc(var(--cw)*.34);
-  color:rgba(255,255,255,.13);transition:box-shadow .2s,border-color .2s,transform .2s}
-.slot.hot{border-color:rgba(255,215,110,.9);box-shadow:0 0 0 3px rgba(255,215,110,.28),0 0 34px rgba(255,190,80,.5) ,inset 0 2px 14px rgba(0,0,0,.35);transform:scale(1.035)}
+  border:2px solid rgba(255,255,255,.15);
+  background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,.12));
+  box-shadow:inset 0 2px 16px rgba(0,0,0,.45),inset 0 0 0 1px rgba(255,255,255,.05),
+             0 1px 0 rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.16);font-size:calc(var(--cw)*.32);
+  transition:box-shadow .2s,border-color .2s,transform .2s,color .2s,
+             width .26s ease,height .26s ease}
+.slot .sui{width:44%;height:44%;opacity:.55}
+.slot.stockslot{font-size:calc(var(--cw)*.4);color:rgba(255,255,255,.24)}
+.slot.hot{border-color:rgba(255,215,110,.9);color:rgba(255,215,110,.5);
+  box-shadow:0 0 0 3px rgba(255,215,110,.28),0 0 36px rgba(255,190,80,.5),
+             inset 0 2px 16px rgba(0,0,0,.4);transform:scale(1.035)}
 .slot.f-ring::after{content:"";position:absolute;inset:-6px;border-radius:calc(var(--rad) + 6px);
   border:2px solid rgba(255,215,110,.75);opacity:0;pointer-events:none}
 .slot.pulse::after{animation:fring .6s cubic-bezier(.2,.9,.3,1)}
 @keyframes fring{0%{opacity:.95;transform:scale(.9)}100%{opacity:0;transform:scale(1.45)}}
 
+/* ---------------- carte ---------------- */
 .card{position:absolute;top:0;left:0;width:var(--cw);height:var(--ch);
   transform-style:preserve-3d;will-change:transform;
-  transition:transform .3s cubic-bezier(.22,1.2,.3,1);cursor:pointer}
+  transition:transform .3s cubic-bezier(.22,1.2,.3,1),width .26s ease,height .26s ease;
+  cursor:pointer}
 .card.notrans{transition:none!important}
 .card .inner{position:absolute;inset:0;transform-style:preserve-3d;
   transition:transform .34s cubic-bezier(.4,1.15,.35,1)}
 .card.down .inner{transform:rotateY(180deg)}
 .card .face{position:absolute;inset:0;border-radius:var(--rad);overflow:hidden;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.25)}
+  box-shadow:0 calc(var(--ch)*.018) calc(var(--ch)*.05) rgba(0,0,0,.42),
+             0 1px 2px rgba(0,0,0,.35),
+             0 0 0 1px rgba(0,0,0,.3)}
 .card .back{transform:rotateY(180deg)}
 .card.lift{z-index:9999}
 .card.lift .face{box-shadow:0 26px 46px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.3)}
 .card.nodrag{cursor:default}
 
-/* ---- front layout ---- */
-.front{background:var(--cardbg,#fdfbf5);color:var(--ink,#1b1f2a);
+/* ---------------- face visible ---------------- */
+.front{
+  --idxfont:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --rk:calc(var(--cw)*var(--rkf));
+  --sk:calc(var(--cw)*var(--rkf)*.75);
+  --pz:calc(var(--cw)*var(--pzf));
+  /* bas visuel des deux index : le decor central se place entre les deux */
+  --it:calc(var(--ch)*.048 + var(--rk)*.84);
+  --ib:calc(var(--ch)*.048 + var(--rk)*var(--brk)*.84);
+  background:var(--cardbg,#fdfbf5);
+  color:var(--ink,#1b1f2a);
   font-family:var(--cardfont,"Segoe UI",Georgia,serif);
-  display:block;font-size:calc(var(--cw)*.155)}
-.front.red{color:var(--inkred,#c62828)}
-.front::before{content:"";position:absolute;inset:0;border-radius:var(--rad);
-  border:1px solid var(--cardborder,rgba(0,0,0,.16));pointer-events:none;z-index:4}
-.corner{position:absolute;display:flex;flex-direction:column;align-items:center;line-height:.92;z-index:3}
-.corner .r{font-weight:800;font-size:1.5em;letter-spacing:-.03em}
-.corner .s{font-size:1.15em;margin-top:.05em}
-.corner.tl{top:4.5%;left:5.5%}
-.corner.br{bottom:4.5%;right:5.5%;transform:rotate(180deg)}
-.pips{position:absolute;inset:14% 17%;z-index:2}
-.pip{position:absolute;transform:translate(-50%,-50%);font-size:2.05em;line-height:1}
+  display:block}
+
+/* couleurs par enseigne (permet le mode 4 couleurs) */
+.front.s0,.front.s3{color:var(--ink,#1b1f2a)}
+.front.s1,.front.s2{color:var(--inkred,#c0202a)}
+body.deck4 .front.s2{color:var(--inkblue,#0b5fc4)}
+body.deck4 .front.s3{color:var(--inkgreen,#12793f)}
+
+/* grain de papier + éclairage doux */
+.paper{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 32% -8%,rgba(255,255,255,.3),transparent 60%),
+    radial-gradient(ellipse at 82% 112%,rgba(0,0,0,.12),transparent 58%)}
+.paper::after{content:"";position:absolute;inset:0;opacity:.05;
+  background-image:radial-gradient(circle at 50% 50%,#000 0 .5px,transparent 1px);
+  background-size:3px 3px}
+
+/* liseré et bord */
+.edge{position:absolute;inset:0;z-index:7;pointer-events:none;border-radius:var(--rad);
+  border:1px solid var(--cardborder,rgba(0,0,0,.18));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+
+/* ---- index de coin : valeur + enseigne côte à côte ---- */
+.idx{position:absolute;z-index:6;display:flex;align-items:center;line-height:1;
+  gap:calc(var(--cw)*.03)}
+.idx.tl{top:calc(var(--ch)*.036);left:calc(var(--cw)*.06)}
+.idx.br{bottom:calc(var(--ch)*.036);right:calc(var(--cw)*.06);transform:rotate(180deg);
+  --rk:calc(var(--cw)*var(--rkf)*var(--brk));
+  --sk:calc(var(--cw)*var(--rkf)*var(--brk)*.75)}
+.idx .r{font-family:var(--idxfont);font-weight:900;font-size:var(--rk);line-height:1;
+  letter-spacing:-.01em;font-variant-numeric:tabular-nums lining-nums;
+  text-shadow:var(--idxglow,none)}
+.idx .sui{width:var(--sk);height:var(--sk);display:block;flex:0 0 auto;
+  filter:var(--idxfilter,none)}
+.front.r10 .idx .r{font-size:calc(var(--rk)*.9);letter-spacing:-.055em}
+
+/* ---- enseignes centrales (2..10) ---- */
+.pips{position:absolute;z-index:2;
+  top:calc(var(--it) + var(--pz)*.5 + var(--ch)*.012);
+  bottom:calc(var(--ib) + var(--pz)*.5 + var(--ch)*.012);
+  left:calc(var(--cw)*.19);right:calc(var(--cw)*.19)}
+.pip{position:absolute;width:var(--pz);height:var(--pz);
+  transform:translate(-50%,-50%);display:block}
 .pip.flip{transform:translate(-50%,-50%) rotate(180deg)}
-.pip.big{font-size:3.6em}
-.court{position:absolute;inset:13% 12%;z-index:2;border-radius:calc(var(--rad)*.7);
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  background:var(--courtbg,linear-gradient(160deg,rgba(0,0,0,.05),rgba(0,0,0,.01)));
-  border:1px solid var(--courtborder,rgba(0,0,0,.14))}
-.court .cl{font-size:3.05em;font-weight:800;line-height:.9}
-.court .cs{font-size:1.5em;margin-top:.12em;opacity:.9}
-.front .sheen{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;
+.pip .sui{width:100%;height:100%;display:block}
+
+/* ---- as ---- */
+.ace{position:absolute;z-index:2;display:flex;align-items:center;justify-content:center;
+  top:var(--it);bottom:var(--ib);left:calc(var(--cw)*.1);right:calc(var(--cw)*.1)}
+.ace .acering{position:absolute;width:calc(var(--cw)*.62);height:calc(var(--cw)*.62);
+  left:50%;top:50%;transform:translate(-50%,-50%)}
+.ace .abig{width:calc(var(--cw)*.4);height:calc(var(--cw)*.4);position:relative}
+
+/* ---- figures (V / D / R) ---- */
+.court{position:absolute;z-index:2;
+  top:calc(var(--it) + var(--ch)*.072);bottom:calc(var(--ib) + var(--ch)*.072);
+  left:calc(var(--cw)*.185);right:calc(var(--cw)*.185);
+  border-radius:calc(var(--rad)*.6);overflow:hidden;
+  background:var(--courtbg,linear-gradient(160deg,rgba(0,0,0,.05),rgba(0,0,0,.015)));
+  border:1px solid var(--courtborder,rgba(0,0,0,.16))}
+.cframe{position:absolute;inset:3px;border-radius:calc(var(--rad)*.4);pointer-events:none;
+  border:1px solid var(--courtborder,rgba(0,0,0,.14));opacity:.6}
+.chalf{position:absolute;left:0;right:0;height:48%;overflow:hidden}
+.chalf.top{top:0}
+.chalf.bot{bottom:0;transform:rotate(180deg)}
+.cdiv{position:absolute;left:8%;right:8%;top:50%;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--courtborder,rgba(0,0,0,.3)),transparent);
+  opacity:.85}
+.cfig{width:100%;height:100%;display:block}
+.cf-ink{fill:currentColor}
+.cf-cut{fill:var(--courtcut,var(--paper,#fbf7ee))}
+.cf-line{stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.cf-orn{opacity:.34}
+
+/* ---- reflets ---- */
+.front .sheen{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;
   background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.85) 50%,transparent 62%);
   transform:translateX(-60%)}
 .card.shine .front .sheen{animation:sheen .65s ease-out}
 @keyframes sheen{0%{opacity:.9;transform:translateX(-70%)}100%{opacity:0;transform:translateX(70%)}}
 
-/* ---- back base ---- */
-.back{background:#8c1220;position:relative}
-.back::after{content:"";position:absolute;inset:5.5%;border-radius:calc(var(--rad)*.65);
-  border:1.5px solid rgba(255,255,255,.32);pointer-events:none}
+/* ---------------- dos ---------------- */
+.back{background:#8c1220;position:relative;overflow:hidden}
+.back::after{content:"";position:absolute;inset:5.5%;border-radius:calc(var(--rad)*.6);
+  border:1.5px solid rgba(255,255,255,.34);pointer-events:none;z-index:3}
+.bfill{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% -10%,rgba(255,255,255,.2),transparent 62%),
+             radial-gradient(ellipse at 50% 115%,rgba(0,0,0,.3),transparent 60%)}
+.bframe{position:absolute;inset:10.5%;z-index:3;pointer-events:none;
+  border:1px solid rgba(255,255,255,.2);border-radius:calc(var(--rad)*.45)}
+.bmedal{position:absolute;inset:24%;z-index:2;pointer-events:none;opacity:.26;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
+.bmedal svg{width:100%;height:100%;display:block}
 
-/* ---- previews (inventory / case reel) ---- */
-.prev{position:relative;height:104px;border-radius:11px;overflow:hidden;
+/* ---------------- aperçus (inventaire / caisses) ---------------- */
+.prev{position:relative;height:150px;border-radius:11px;overflow:hidden;
   display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.28)}
-.prev .minicard{position:relative;width:66px;height:93px;--cw:66px;--ch:93px;--rad:6px;
+.prev .minicard{position:relative;width:98px;height:137px;--cw:98px;--ch:137px;--rad:8px;
   transform-style:preserve-3d;animation:minifloat 4.5s ease-in-out infinite}
 @keyframes minifloat{0%,100%{transform:rotateY(-13deg) rotateX(6deg) translateY(0)}
   50%{transform:rotateY(13deg) rotateX(-4deg) translateY(-5px)}}
-.prev .minicard .face{position:absolute;inset:0;border-radius:6px;overflow:hidden;
+.prev .minicard .face{position:absolute;inset:0;border-radius:inherit;overflow:hidden;
   box-shadow:0 8px 18px rgba(0,0,0,.5)}
-.prev .swatch{position:absolute;inset:0}
 .invitem:hover .minicard{animation-duration:1.4s}
 .prev .bgsurface,.prev .matsurface{position:absolute;inset:0}
-.prev .swatch{position:absolute;inset:0}
