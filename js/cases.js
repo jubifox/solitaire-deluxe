@@ -3,15 +3,10 @@
 function itemPreviewHTML(item, extraClass){
   var cls = item.id + ' ' + (extraClass||'');
   if (item.type === 'sleeve'){
-    return '<div class="prev '+cls+'"><div class="minicard"><div class="face back"></div></div></div>';
+    return '<div class="prev '+cls+'"><div class="minicard">'+CardArt.previewBack()+'</div></div>';
   }
   if (item.type === 'skin'){
-    return '<div class="prev '+cls+'"><div class="minicard">'+
-      '<div class="face front black">'+
-        '<div class="corner tl"><span class="r">A</span><span class="s">&#9824;</span></div>'+
-        '<div class="corner br"><span class="r">A</span><span class="s">&#9824;</span></div>'+
-        '<div class="pips"><span class="pip big" style="left:50%;top:50%">&#9824;</span></div>'+
-      '</div></div></div>';
+    return '<div class="prev '+cls+'"><div class="minicard">'+CardArt.previewFront(13,0)+'</div></div>';
   }
   if (item.type === 'mat'){
     return '<div class="prev '+cls+'"><div class="matsurface"></div></div>';

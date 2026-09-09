@@ -62,40 +62,79 @@
 @keyframes goldshift{0%,100%{background-position:0 0}50%{background-position:100% 100%}}
 .sleeve-or .back::after{border-color:rgba(80,50,0,.5)}
 
-/* ---------------- SKINS (faces) ---------------- */
-.skin-classic .front{--cardbg:linear-gradient(170deg,#fffdf7,#f2ece0);--ink:#1a1c24;--inkred:#c62828}
-.skin-papier .front{--cardbg:linear-gradient(160deg,#f5e9cf,#e2cfa6);--ink:#3b2f21;--inkred:#a63d20;
-  --cardborder:rgba(90,60,20,.3);--courtborder:rgba(90,60,20,.35);--cardfont:Georgia,serif}
-.skin-papier .front::after{content:"";position:absolute;inset:0;z-index:1;opacity:.35;pointer-events:none;
+/* ---------------- SKINS (faces) ----------------
+   Chaque jeu definit son encre par enseigne (--ink / --inkred, plus --inkblue
+   et --inkgreen pour le mode 4 couleurs), la teinte du papier utilisee pour
+   detourer les figures (--paper / --courtcut) et le cadre des cartes. */
+.skin-classic .front{
+  --cardbg:linear-gradient(170deg,#fffdf7,#f4eee2);
+  --ink:#16181f;--inkred:#c2181f;--inkblue:#0b5fc4;--inkgreen:#12793f;
+  --paper:#fdfaf2;--cardborder:rgba(0,0,0,.2);
+  --courtbg:linear-gradient(160deg,rgba(0,0,0,.05),rgba(0,0,0,.012));
+  --courtborder:rgba(0,0,0,.17)}
+
+.skin-papier .front{
+  --cardbg:linear-gradient(160deg,#f7eeda,#e4d3ac);
+  --ink:#2f2316;--inkred:#a3301a;--inkblue:#1d5b86;--inkgreen:#3f6b2a;
+  --paper:#f3e7cd;--cardborder:rgba(90,60,20,.36);
+  --courtbg:linear-gradient(160deg,rgba(120,80,30,.09),rgba(120,80,30,.02));
+  --courtborder:rgba(90,60,20,.42);--cardfont:Georgia,serif}
+.skin-papier .front::after{content:"";position:absolute;inset:0;z-index:1;opacity:.3;pointer-events:none;
   background:repeating-linear-gradient(93deg,rgba(120,80,30,.09) 0 2px,transparent 2px 5px)}
-.skin-mono .front{--cardbg:linear-gradient(160deg,#fafafa,#e6e6e6);--ink:#14161a;--inkred:#5c626e;
-  --cardborder:rgba(0,0,0,.3);--courtbg:linear-gradient(160deg,#14161a,#333);--courtborder:#14161a}
-.skin-mono .court{color:#fafafa}
-.skin-givre .front{--cardbg:linear-gradient(155deg,#eaf6ff,#c2e2f5);--ink:#0f3550;--inkred:#0a6fa8;
-  --cardborder:rgba(120,200,255,.6);--courtbg:linear-gradient(160deg,rgba(255,255,255,.75),rgba(160,220,255,.3));
-  --courtborder:rgba(140,215,255,.8)}
-.skin-givre .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5;
+
+.skin-mono .front{
+  --cardbg:linear-gradient(160deg,#fcfcfc,#e7e7e7);
+  --ink:#0f1115;--inkred:#565d69;--inkblue:#3a4654;--inkgreen:#6b7280;
+  --paper:#fbfbfb;--courtcut:#fbfbfb;--cardborder:rgba(0,0,0,.36);
+  --courtbg:linear-gradient(160deg,#f4f4f4,#d9d9d9);--courtborder:#1d2027}
+
+.skin-givre .front{
+  --cardbg:linear-gradient(155deg,#f1faff,#c6e5f8);
+  --ink:#0c2c45;--inkred:#0a6fa8;--inkblue:#1160c0;--inkgreen:#0e7a63;
+  --paper:#eaf6fe;--cardborder:rgba(90,180,235,.7);
+  --courtbg:linear-gradient(160deg,rgba(255,255,255,.82),rgba(160,220,255,.3));
+  --courtborder:rgba(120,205,255,.85);--courtcut:#f4fbff}
+.skin-givre .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.45;
   background:radial-gradient(circle at 15% 10%,rgba(255,255,255,.9),transparent 26%),
              radial-gradient(circle at 85% 88%,rgba(255,255,255,.85),transparent 24%)}
-.skin-neon .front{--cardbg:linear-gradient(165deg,#12132a,#05060f);--ink:#5ef2ff;--inkred:#ff4fa3;
-  --cardborder:rgba(94,242,255,.45);--courtbg:linear-gradient(160deg,rgba(94,242,255,.12),transparent);
-  --courtborder:rgba(94,242,255,.5)}
-.skin-neon .front{text-shadow:0 0 9px currentColor}
+
+.skin-neon .front{
+  --cardbg:linear-gradient(165deg,#151634,#05060f);
+  --ink:#6cf5ff;--inkred:#ff5aa8;--inkblue:#8b86ff;--inkgreen:#78ff9d;
+  --paper:#0d0e20;--courtcut:#0d0e20;--cardborder:rgba(108,245,255,.5);
+  --courtbg:linear-gradient(160deg,rgba(108,245,255,.11),transparent);
+  --courtborder:rgba(108,245,255,.55);
+  --idxglow:0 0 11px currentColor;--idxfilter:drop-shadow(0 0 6px currentColor)}
 .skin-neon .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 4px)}
-.skin-sakura .front{--cardbg:linear-gradient(165deg,#fff6f8,#ffdfe9);--ink:#5b2340;--inkred:#e0578c;
-  --cardborder:rgba(224,87,140,.4);--courtbg:linear-gradient(160deg,rgba(255,255,255,.8),rgba(255,190,215,.35));
-  --courtborder:rgba(224,87,140,.45);--cardfont:"Segoe UI",serif}
-.skin-cyber .front{--cardbg:linear-gradient(160deg,#0d1f1c,#04100f);--ink:#c6ff4f;--inkred:#ff9f1c;
-  --cardborder:rgba(198,255,79,.5);--courtbg:linear-gradient(160deg,rgba(198,255,79,.12),transparent);
-  --courtborder:rgba(198,255,79,.55);--cardfont:Consolas,"Segoe UI",monospace}
-.skin-cyber .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5;
-  background:repeating-linear-gradient(90deg,rgba(198,255,79,.13) 0 1px,transparent 1px 8px)}
-.skin-royal .front{--cardbg:linear-gradient(160deg,#fff8e2,#f0dca6);--ink:#3b2c05;--inkred:#a3141b;
-  --cardborder:rgba(180,140,40,.7);--courtbg:linear-gradient(160deg,#ffd76e,#c9962a);--courtborder:#8c6a18}
-.skin-royal .front::after{content:"";position:absolute;inset:2px;z-index:1;pointer-events:none;border-radius:inherit;
-  border:1px solid rgba(180,140,40,.5)}
-.skin-royal .court{color:#2c1f02;box-shadow:0 0 18px rgba(255,200,80,.6) inset}
+.skin-neon .edge{box-shadow:inset 0 0 0 1px rgba(108,245,255,.16),inset 0 0 14px rgba(108,245,255,.14)}
+
+.skin-sakura .front{
+  --cardbg:linear-gradient(165deg,#fff8fa,#ffdde8);
+  --ink:#4a1a33;--inkred:#d8447c;--inkblue:#5a63c8;--inkgreen:#3f8f6a;
+  --paper:#fff3f7;--cardborder:rgba(216,68,124,.45);
+  --courtbg:linear-gradient(160deg,rgba(255,255,255,.85),rgba(255,190,215,.32));
+  --courtborder:rgba(216,68,124,.5)}
+
+.skin-cyber .front{
+  --cardbg:linear-gradient(160deg,#0f2622,#04100f);
+  --ink:#ccff5c;--inkred:#ff9f1c;--inkblue:#4fd4ff;--inkgreen:#79ff9a;
+  --paper:#0a1b18;--courtcut:#0a1b18;--cardborder:rgba(204,255,92,.55);
+  --courtbg:linear-gradient(160deg,rgba(204,255,92,.12),transparent);
+  --courtborder:rgba(204,255,92,.6);
+  --idxfont:Consolas,"DejaVu Sans Mono",monospace;--idxglow:0 0 9px currentColor}
+.skin-cyber .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.45;
+  background:repeating-linear-gradient(90deg,rgba(204,255,92,.13) 0 1px,transparent 1px 8px)}
+.skin-cyber .edge{box-shadow:inset 0 0 0 1px rgba(204,255,92,.18)}
+
+.skin-royal .front{
+  --cardbg:linear-gradient(160deg,#fff9e6,#f1dfaf);
+  --ink:#2f2308;--inkred:#a3141b;--inkblue:#1b4f8f;--inkgreen:#2c6b32;
+  --paper:#fdf6df;--courtcut:#fff5d6;--cardborder:rgba(170,132,38,.75);
+  --courtbg:linear-gradient(160deg,#ffdf92,#d3a23a);--courtborder:#8c6a18}
+.skin-royal .front::after{content:"";position:absolute;inset:3px;z-index:1;pointer-events:none;
+  border-radius:calc(var(--rad)*.75);border:1px solid rgba(180,140,40,.5)}
+.skin-royal .court{box-shadow:inset 0 0 18px rgba(255,200,80,.55)}
 
 /* ---------------- MATS (tapis) ---------------- */
 .mat-feutre .matsurface{background:

@@ -33,13 +33,16 @@ var App = (function(){
   /* ---------- cosmétiques ---------- */
   function applyCosmetics(){
     var e = Store.state.equip;
-    var cls = [e.bg, e.mat, e.skin, e.sleeve, 'juice-'+Store.opts().juice];
+    var o = Store.opts();
+    var cls = [e.bg, e.mat, e.skin, e.sleeve, 'juice-'+o.juice, 'idx-'+o.idx];
+    if (o.deck4) cls.push('deck4');
     var sl = ITEM_BY_ID[e.sleeve];
     if (sl && RARITY_ORDER.indexOf(sl.rarity) >= 3){
       cls.push('aura');
       document.body.style.setProperty('--aura', RARITY[sl.rarity].color);
     } else document.body.style.removeProperty('--aura');
     document.body.className = cls.join(' ');
+    UI.setIndexLevel(o.idx);
     FX.ambient(e.bg);
   }
 
@@ -189,6 +192,8 @@ var App = (function(){
     document.querySelectorAll('#opt-draw button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v === o.draw); });
     document.querySelectorAll('#opt-mode button').forEach(function(b){ b.classList.toggle('on', b.dataset.v === o.mode); });
     document.querySelectorAll('#opt-juice button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v === o.juice); });
+    document.querySelectorAll('#opt-idx button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v === o.idx); });
+    $('opt-deck4').checked = !!o.deck4;
     $('opt-sound').checked = o.sound;
     $('opt-shake').checked = o.shake;
     $('opt-fastcase').checked = o.fastcase;
@@ -197,6 +202,7 @@ var App = (function(){
 
   /* ---------- démarrage ---------- */
   function init(){
+    CardArt.installSprite();
     FX.init();
     applyCosmetics();
     refreshCoins(false);
@@ -269,6 +275,15 @@ var App = (function(){
       b.addEventListener('click', function(){
         Store.setOpt('juice', +b.dataset.v); syncOptions(); applyCosmetics(); SFX.click();
       });
+    });
+    document.querySelectorAll('#opt-idx button').forEach(function(b){
+      b.addEventListener('click', function(){
+        Store.setOpt('idx', +b.dataset.v); syncOptions(); applyCosmetics(); refreshInventory(); SFX.click();
+      });
+    });
+    $('opt-deck4').addEventListener('change', function(){
+      Store.setOpt('deck4', this.checked); applyCosmetics(); refreshInventory();
+      toast(this.checked ? 'Jeu à 4 couleurs activé' : 'Jeu à 2 couleurs');
     });
     $('opt-sound').addEventListener('change', function(){ Store.setOpt('sound', this.checked); SFX.setMuted(!this.checked); });
     $('opt-shake').addEventListener('change', function(){ Store.setOpt('shake', this.checked); });
