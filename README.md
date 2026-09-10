@@ -89,22 +89,61 @@ les enseignes ♠ ♥ ♦ ♣ sont des tracés maison, nettes à toute taille, i
 - **Décor** : **parallaxe** du fond et du tapis à la souris, particules d'ambiance propres au fond
   (pétales, poussière, étoiles), vignette qui chauffe, aura animée autour du dos quand un dos
   Mythique ou mieux est équipé.
-- **Retour d'action** : étincelles, anneaux d'énergie, popups de score, compteurs qui roulent,
-  **compteur d'enchaînement** qui monte et déforme le plateau, secousses d'écran progressives
-  (3 intensités), flashs, onde au clic sur les boutons.
-- **Victoire** : confettis, feux d'artifice et **cascade de cartes rebondissantes** avec physique.
+- **Retour d'action** : étincelles, anneaux d'énergie, **ondes de choc**, **faisceaux de lumière**
+  qui relient la carte à sa fondation, **particules en forme d'enseigne** (♠ ♥ ♦ ♣) aux couleurs
+  du symbole joué, popups de score, compteurs qui roulent, **compteur d'enchaînement** qui monte
+  et déforme le plateau, secousses d'écran progressives (3 intensités), flashs,
+  **balayages lumineux plein écran** et **pulsation chromatique** sur les gros enchaînements.
+- **Chaleur du plateau** : la vignette s'embrase par paliers au fil de l'enchaînement et respire
+  au-delà de x6.
+- **Enseigne complète** : couronne de lumière sur la fondation, gerbe d'enseignes et fanfare.
+- **Colonne vidée** : l'emplacement libéré souffle une onde verte.
+- **Inclinaison 3D** : au survol, la carte s'incline en suivant réellement le curseur.
+- **Victoire** : confettis, feux d'artifice, **pluie d'enseignes**, balayages arc-en-ciel et
+  **cascade de cartes rebondissantes** avec physique.
 
 Trois niveaux d'intensité : **Sobre / Normal / Max** (Options).
 
 Tous les sons sont **synthétisés à la volée** (Web Audio) : zéro fichier audio.
 
-### Les cosmétiques — 36 pièces
+### Fluidité — le jeu s'adapte à la machine
+Un gouverneur (`js/perf.js`) mesure les images par seconde sur une fenêtre glissante et **ajuste
+le niveau de détail en direct**, en trois paliers. Trois secondes de suite sous 40 fps et la
+charge retombe ; après une accalmie franche elle remonte. Le démarrage est ignoré, et deux
+retrogradations bloquent le plafond pour éviter tout va-et-vient.
+
+| Palier | Ce qui tombe |
+|---|---|
+| 2 — plein | rien : ambiance complète, reflets au repos, inclinaison au curseur, `devicePixelRatio` jusqu'à 2 |
+| 1 — normal | moitié des particules d'ambiance, un seul voile décoratif de fond, oscillation ralentie |
+| 0 — éco | plus d'ambiance ni de voiles animés, grain et reflets coupés, canvas en 1× |
+
+Ce qui a été optimisé au passage :
+- **particules en pool préalloué** : plus aucune allocation ni `splice` pendant l'animation ;
+- **effacement par zone sale** : le canvas n'efface que le rectangle réellement peint à la frame
+  précédente, au lieu du plein écran à chaque image ;
+- **l'aurore boréale n'anime plus un `filter: blur(48px)` plein écran** — des dégradés déjà flous
+  par construction, animés en transformation seule, sur une couche promue ;
+- **plus de `getBoundingClientRect` par mouvement de souris** : la position des cartes est déduite
+  de la géométrie connue et d'un rect de plateau mis en cache ;
+- **mise en pause complète** quand l'onglet passe en arrière-plan ;
+- **`prefers-reduced-motion`** respecté : animations coupées, palier éco forcé.
+
+Mesuré dans le conteneur de développement (rendu logiciel, sans GPU) : **24 fps avant, 60 fps
+après**, effets compris. La bascule est désactivable (Options → *Fluidité adaptative*).
+
+### Les cosmétiques — 56 pièces
 | Type | Nombre | Exemples |
 |---|---|---|
-| Dos de cartes | 12 | Damier Azur, Nébuleuse, Écailles de Dragon, Holo Prisme, Inferno, Feuille d'Or |
-| Jeux de cartes | 8 | Papier Vintage, Givre, Néon Nocturne, Sakura, Cyberdeck, Or Royal |
-| Tapis | 8 | Feutre Vert, Chêne Massif, Grille Néon, Velours Royal, Coulée de Lave |
-| Fonds | 8 | Aurore Boréale, Skyline Néon, Voie Lactée, Pluie de Pétales, Vaporwave |
+| Dos de cartes | 18 | Origami, Récif, Runes Anciennes, Écailles de Dragon, Obsidienne, Œil du Cyclone, Feuille d'Or, Prisme Liquide |
+| Jeux de cartes | 13 | Ardoise & Craie, Bauhaus, Herbier, Pixel 8-bit, Cyberdeck, Or Royal, Spectre Holo |
+| Tapis | 12 | Sable Chaud, Cuir Cognac, Marbre Veiné, Velours Royal, Coulée de Lave, Damas d'Or |
+| Fonds | 13 | Dunes, Pluie de Néons, Abysse, Voie Lactée, Feu de Camp, Vaporwave, Éclipse |
+
+Les pièces les plus rares sont **animées** : foil qui balaie la carte (Spectre Holo), prisme
+en rotation (Prisme Liquide), tourbillon (Œil du Cyclone), moire dorée (Damas d'Or),
+couronne solaire (Éclipse). Chaque fond a sa propre ambiance de particules — pétales, braises,
+bulles, spores, pluie, voiles de sable.
 
 Tout est dessiné en CSS et SVG (dégradés, motifs, tracés, animations) :
 **aucune image, aucune police externe**.
@@ -177,10 +216,11 @@ Solitaire-Deluxe/
 │  ├─ case.css                # caisses et roulette
 │  └─ juice.css               # toutes les animations de feedback
 ├─ js/
+│  ├─ perf.js                 # gouverneur de fluidité (FPS, paliers de détail)
 │  ├─ data.js                 # raretés, items, caisses, économie
 │  ├─ store.js                # sauvegarde locale + export/import
 │  ├─ sfx.js                  # sons synthétisés (Web Audio)
-│  ├─ fx.js                   # particules, secousses, flashs, ambiance
+│  ├─ fx.js                   # particules (pool), ondes, faisceaux, ambiance
 │  ├─ klondike.js             # règles du jeu (pur, testable)
 │  ├─ cardart.js              # enseignes SVG, faces, figures, dos
 │  ├─ dense.js                # mode Conjonction (règles)

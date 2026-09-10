@@ -42,6 +42,7 @@ var App = (function(){
       document.body.style.setProperty('--aura', RARITY[sl.rarity].color);
     } else document.body.style.removeProperty('--aura');
     document.body.className = cls.join(' ');
+    Perf.relax();
     UI.setIndexLevel(o.idx);
     FX.ambient(e.bg);
   }
@@ -194,6 +195,7 @@ var App = (function(){
     document.querySelectorAll('#opt-juice button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v === o.juice); });
     document.querySelectorAll('#opt-idx button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v === o.idx); });
     $('opt-deck4').checked = !!o.deck4;
+    $('opt-autoq').checked = o.autoq !== false;
     $('opt-sound').checked = o.sound;
     $('opt-shake').checked = o.shake;
     $('opt-fastcase').checked = o.fastcase;
@@ -203,6 +205,8 @@ var App = (function(){
   /* ---------- démarrage ---------- */
   function init(){
     CardArt.installSprite();
+    Perf.init();
+    Perf.setAuto(Store.opts().autoq !== false);
     FX.init();
     applyCosmetics();
     refreshCoins(false);
@@ -280,6 +284,11 @@ var App = (function(){
       b.addEventListener('click', function(){
         Store.setOpt('idx', +b.dataset.v); syncOptions(); applyCosmetics(); refreshInventory(); SFX.click();
       });
+    });
+    $('opt-autoq').addEventListener('change', function(){
+      Store.setOpt('autoq', this.checked);
+      Perf.setAuto(this.checked);
+      toast(this.checked ? 'Fluidité adaptative activée' : 'Qualité maximale forcée');
     });
     $('opt-deck4').addEventListener('change', function(){
       Store.setOpt('deck4', this.checked); applyCosmetics(); refreshInventory();

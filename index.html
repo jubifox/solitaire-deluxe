@@ -97,6 +97,7 @@
 
 <canvas id="fx"></canvas>
 <div id="flash"></div>
+<div id="sweep"></div>
 <div id="vignette"></div>
 
 <div class="modal" id="modal-open">
@@ -146,6 +147,9 @@
     <div class="optrow"><span>Jeu &agrave; 4 couleurs<br><small style="color:#7d8798">Carreau bleu et tr&egrave;fle vert : on distingue l'enseigne d'un coup d'&oelig;il</small></span>
       <label class="switch"><input type="checkbox" id="opt-deck4"><span></span></label>
     </div>
+    <div class="optrow"><span>Fluidit&eacute; adaptative<br><small style="color:#7d8798">Mesure les images par seconde et allège les effets si la machine peine</small></span>
+      <label class="switch"><input type="checkbox" id="opt-autoq" checked><span></span></label>
+    </div>
     <div class="optrow"><span>Intensit&eacute; des effets</span>
       <div class="seg" id="opt-juice"><button data-v="0">Sobre</button><button data-v="1">Normal</button><button data-v="2">Max</button></div>
     </div>
@@ -162,6 +166,7 @@
 
 <div id="toast"></div>
 
+<script src="js/perf.js"></script>
 <script src="js/data.js"></script>
 <script src="js/store.js"></script>
 <script src="js/sfx.js"></script>

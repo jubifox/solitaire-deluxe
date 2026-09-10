@@ -11,6 +11,7 @@ var UI = (function(){
   /* Etalement vise et minimum tolere, par niveau de lisibilite : cale pile
      sur la hauteur de l'index, de sorte qu'une carte recouverte montre sa
      valeur en entier et rien de plus. */
+  var SUITCOL = ['#9fc6ff', '#ff6f8b', '#ffa76f', '#8ce6a8'];   /* pique coeur carreau trefle */
   var FANUP = [0.29, 0.305, 0.335], FAN_DN = 0.115;
   var UPMIN = [0.235, 0.262, 0.292];
 
@@ -99,6 +100,7 @@ var UI = (function(){
     S.geo = {W:W,H:H,cw:cw,ch:ch,gap:gap,ox:ox,oy:oy,y1:y1,
              wasteFan: cw*0.30, fanUp: ch*FANUP[S.idxLevel], fanDown: ch*FAN_DN};
 
+    invalidateRect();
     S.el.board.style.setProperty('--cw', cw+'px');
     S.el.board.style.setProperty('--ch', ch+'px');
 
@@ -109,13 +111,21 @@ var UI = (function(){
     for (i=0;i<7;i++) place(S.slotEl['t'+i], col(i), y1);
   }
 
-  /* la taille utile change quand une colonne s'allonge : on reajuste */
+  /* La taille utile change quand une colonne s'allonge. On travaille sur les
+     dimensions memorisees au dernier layout : aucune lecture du DOM ici, donc
+     aucun reflow force a chaque rendu. */
   function refit(){
     if (!S.game || !S.vp) return;
     if (Math.abs(fitCW(S.vp.W, S.vp.H) - S.geo.cw) > 2) layout();
   }
 
   function col(i){ return S.geo.ox + i*(S.geo.cw + S.geo.gap); }
+  var _br = null;
+  function boardRect(){
+    if (!_br) _br = S.el.board.getBoundingClientRect();
+    return _br;
+  }
+  function invalidateRect(){ _br = null; }
   function place(el, x, y){ el.style.transform = 'translate3d('+x+'px,'+y+'px,0)'; }
 
   /* Repartition verticale des piles.
@@ -212,6 +222,7 @@ var UI = (function(){
   function clonePos(){
     var o = {};
     for (var k in S.pos) o[k] = {x:S.pos[k].x, y:S.pos[k].y};
+    S.prevPos = o;               // point de depart des faisceaux et des traînees
     return o;
   }
   function prepArc(ids){
@@ -336,7 +347,10 @@ var UI = (function(){
         S.el.table.classList.add('warp');
       }
       if (S.combo >= 4) FX.hot(true);
+      if (S.combo === 3) FX.sweep('gold');
+      if (S.combo >= 5){ FX.chroma(); FX.sweep('rainbow'); }
     }
+    FX.heatLevel(S.combo >= 6 ? 3 : S.combo >= 4 ? 2 : S.combo >= 2 ? 1 : 0);
     if (S.combo > (S.bestCombo||0)) S.bestCombo = S.combo;
   }
   function endCombo(){
@@ -348,6 +362,31 @@ var UI = (function(){
     S.combo = 0;
     S.el.combo.classList.remove('on');
     FX.hot(false);
+    FX.heatLevel(0);
+  }
+
+  /* une enseigne vient d'etre terminee : couronne, gerbe et balayage */
+  function crownSuit(suit, sc, dest){
+    var slot = S.slotEl['f'+suit];
+    if (slot){
+      slot.classList.remove('crowned'); void slot.offsetWidth; slot.classList.add('crowned');
+      setTimeout(function(){ slot.classList.remove('crowned'); }, 1000);
+    }
+    FX.shockwave(sc.x, sc.y, '#ffe6a3', {rings:3, speed:6, w:4, life:46});
+    FX.suitBurst(sc.x, sc.y, suit, {n:22, speed:7.5, size:S.geo.cw*0.22, life:74,
+      colors:[SUITCOL[suit], '#ffd76e', '#ffffff']});
+    FX.sweep('gold');
+    FX.flash(true);
+    FX.shake(3);
+    FX.pop('ENSEIGNE COMPLÈTE', dest.x, dest.y - S.geo.ch*0.75, 'big');
+    SFX.foundation(12);
+  }
+
+  /* etat initial des colonnes : sinon le premier coup ferait pulser
+     les sept emplacements d'un coup */
+  function seedEmptyCols(){
+    S.emptyCols = {};
+    for (var i=0;i<7;i++) S.emptyCols[i] = S.game ? S.game.t[i].length === 0 : false;
   }
 
   function afterMove(res){
@@ -360,6 +399,8 @@ var UI = (function(){
     });
     var dest = centerOf(res.to);
     var sc = boardToScreen(dest);
+    var lead0 = (res.group && res.group[0] && S.prevPos) ? S.prevPos[res.group[0].id] : null;
+    var from = lead0 ? boardToScreen({x:lead0.x + g.cw/2, y:lead0.y + g.ch/2}) : null;
 
     if (res.toFoundation){
       bumpCombo();
@@ -369,20 +410,42 @@ var UI = (function(){
       setTimeout(function(){ lead.classList.remove('glowgold'); }, 900);
       S.slotEl[res.to].classList.remove('pulse'); void S.slotEl[res.to].offsetWidth;
       S.slotEl[res.to].classList.add('pulse');
+      var suit = +res.to[1], scol = SUITCOL[suit];
       FX.ring(sc.x, sc.y, '#ffd76e', 20 + S.combo*4);
+      FX.shockwave(sc.x, sc.y, scol, {rings:1 + Math.min(2, S.combo>>1), speed:3.6 + S.combo*.3,
+        w:3, life:34, r0:g.cw*0.22});
       FX.burst(sc.x, sc.y, {n:14 + S.combo*4, speed:5.5, size:6, life:48,
         colors:['#ffd76e','#fff3b0','#ff9f43']});
+      FX.suitBurst(sc.x, sc.y, suit, {n:5 + S.combo, speed:4.2, size:g.cw*0.17,
+        life:52, colors:[scol, '#ffffff']});
+      if (from) FX.beam(from.x, from.y, sc.x, sc.y, scol);
       FX.sparkAt(S.el.popups, dest.x, dest.y, '#ffd76e');
       FX.shake(Math.min(3, 1 + Math.floor(S.combo/3)));
       if (S.combo >= 3) FX.flash(true);
-      SFX.foundation(S.game.f[+res.to[1]].length - 1);
+      SFX.foundation(S.game.f[suit].length - 1);
       FX.pop('+'+Math.max(0,res.gain), dest.x, dest.y - g.ch*0.35, S.combo>=3?'big':'gold');
+      /* enseigne terminee : couronne de lumiere et fanfare */
+      if (S.game.f[suit].length === 13) crownSuit(suit, sc, dest);
     } else {
       SFX.place();
       FX.burst(sc.x, sc.y + g.ch*0.35, {n:8, speed:3, size:4, life:30, g:.3,
         colors:['#ffffff','#cfd6e4'], glow:false});
       FX.shake(1);
       if (res.gain > 0) FX.pop('+'+res.gain, dest.x, dest.y - g.ch*0.3, 'good');
+    }
+
+    /* une colonne vient de se vider : l'emplacement respire */
+    for (var ci=0; ci<7; ci++){
+      var wasEmpty = !S.emptyCols || S.emptyCols[ci];
+      var isEmpty = S.game.t[ci].length === 0;
+      if (isEmpty && !wasEmpty){
+        var so = S.slotEl['t'+ci];
+        so.classList.remove('opened'); void so.offsetWidth; so.classList.add('opened');
+        setTimeout((function(el){ return function(){ el.classList.remove('opened'); }; })(so), 850);
+        var soc = boardToScreen(centerOf('t'+ci));
+        FX.shockwave(soc.x, soc.y, '#7ee6a8', {rings:2, speed:4.4, w:2.6, life:36, r0:S.geo.cw*0.3});
+      }
+      S.emptyCols[ci] = isEmpty;
     }
 
     if (res.flipped){
@@ -421,6 +484,7 @@ var UI = (function(){
       S.slotEl.stock.classList.add('recycling');
       SFX.recycle();
       FX.shake(1);
+      FX.shockwave(sc.x, sc.y, '#5ef2ff', {rings:3, speed:5, w:3, life:40, r0:S.geo.cw*0.25});
       var c = centerOf('stock'); var sc = boardToScreen(c);
       FX.ring(sc.x, sc.y, '#5ef2ff', 18);
     } else {
@@ -680,8 +744,13 @@ var UI = (function(){
     SFX.win();
     FX.flash(true);
     FX.shake(3);
+    FX.sweep('rainbow');
+    FX.chroma();
     FX.confetti(140, true);
+    FX.suitRain(40);
     FX.fireworks(3600);
+    setTimeout(function(){ FX.suitRain(30); FX.sweep('gold'); }, 1400);
+    setTimeout(function(){ FX.suitRain(26); FX.sweep('rainbow'); }, 2700);
     bounceCards();
     setTimeout(function(){
       if (S.onWin) S.onWin({time:S.elapsed, moves:S.game.moves, score:S.game.score,
@@ -781,13 +850,31 @@ var UI = (function(){
       });
     }, {passive:true});
 
+    /* Reflet et inclinaison 3D suivent le curseur. La position de la carte est
+       deduite de la geometrie deja connue et du rect du plateau mis en cache :
+       aucun getBoundingClientRect par mouvement de souris. */
+    var tilted = null;
     S.el.cards.addEventListener('pointermove', function(e){
-      if (Store.opts().juice === 0) return;
+      if (Store.opts().juice === 0 || Perf.reduced) return;
       var el = e.target.closest ? e.target.closest('.card') : null;
-      if (!el) return;
-      var r = el.getBoundingClientRect();
-      el.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100).toFixed(1)+'%');
-      el.style.setProperty('--my', ((e.clientY-r.top)/r.height*100).toFixed(1)+'%');
+      if (el !== tilted && tilted){ tilted.classList.remove('tilt'); tilted = null; }
+      if (!el || !S.pos) return;
+      var p = S.pos[el._id];
+      if (!p) return;
+      var br = boardRect();
+      var x = (e.clientX - br.left - p.x) / S.geo.cw;
+      var y = (e.clientY - br.top  - p.y) / S.geo.ch;
+      el.style.setProperty('--mx', (x*100).toFixed(1)+'%');
+      el.style.setProperty('--my', (y*100).toFixed(1)+'%');
+      if (Perf.tier === 2 && el.classList.contains('hoverable')){
+        el.style.setProperty('--tx', (Math.max(-1, Math.min(1, x*2-1))).toFixed(3));
+        el.style.setProperty('--ty', (Math.max(-1, Math.min(1, y*2-1))).toFixed(3));
+        el.classList.add('tilt');
+        tilted = el;
+      }
+    }, {passive:true});
+    S.el.cards.addEventListener('pointerleave', function(){
+      if (tilted){ tilted.classList.remove('tilt'); tilted = null; }
     }, {passive:true});
   }
 
@@ -795,6 +882,7 @@ var UI = (function(){
   function newGame(seed, draw){
     S.game = new Klondike(seed === undefined ? (Math.random()*1e9)|0 : seed, draw || Store.opts().draw);
     S.won = false; S.busy = false; S.started = false; S.combo = 0; S.bestCombo = 0;
+    seedEmptyCols();
     S.elapsed = 0; stopTimer();
     S.el.time.textContent = '0:00';
     S.el.combo.classList.remove('on');
