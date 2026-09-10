@@ -237,8 +237,8 @@ body.juice-0.aura .card.down .face.back{animation:none}
 /* ============ Effets ajoutes ============ */
 
 /* ---- balayage lumineux plein ecran ---- */
-#sweep{position:fixed;inset:0;z-index:56;pointer-events:none;opacity:0}
-#sweep.on{animation:sweepfx .9s cubic-bezier(.3,.7,.3,1)}
+#sweep{position:fixed;inset:0;z-index:56;pointer-events:none;opacity:0;display:none}
+#sweep.on{display:block;animation:sweepfx .9s cubic-bezier(.3,.7,.3,1)}
 @keyframes sweepfx{
   0%{opacity:0;transform:translateX(-100%) skewX(-14deg)}
   18%{opacity:.85}
@@ -249,22 +249,27 @@ body.juice-0.aura .card.down .face.back{animation:none}
 #sweep.rainbow{background:linear-gradient(105deg,transparent 34%,rgba(255,95,109,.6) 42%,
   rgba(255,195,113,.6) 47%,rgba(94,231,223,.6) 53%,rgba(122,92,255,.6) 58%,transparent 66%)}
 
-/* ---- pulsation chromatique sur gros enchainement ---- */
-@keyframes chromafx{
-  0%{filter:none}
-  25%{filter:hue-rotate(-14deg) saturate(1.5) contrast(1.06)}
-  60%{filter:hue-rotate(10deg) saturate(1.3)}
-  100%{filter:none}
-}
-body.chroma #shaker{animation:chromafx .48s ease-out}
+/* ---- pulsation chromatique sur gros enchainement ----
+   Surtout pas un filter anime sur #shaker : cela re-rasterise toute
+   l'interface a chaque image. Un simple voile en opacite reste composite. */
+#chroma{position:fixed;inset:0;z-index:57;pointer-events:none;opacity:0;display:none;
+  mix-blend-mode:screen;
+  background:radial-gradient(ellipse at 50% 50%,rgba(120,80,255,.35),rgba(255,60,160,.22) 55%,transparent 78%)}
+@keyframes chromafx{0%{opacity:0}25%{opacity:.85}100%{opacity:0}}
+body.chroma #chroma{display:block;animation:chromafx .48s ease-out}
 
 /* ---- chaleur ambiante : le tapis s'allume avec l'enchainement ---- */
 .matsurface{transition:box-shadow .5s ease}
 body[data-heat="1"] #vignette{box-shadow:inset 0 0 22vw rgba(255,170,70,.14),inset 0 0 24vw rgba(0,0,0,.5)}
 body[data-heat="2"] #vignette{box-shadow:inset 0 0 20vw rgba(255,150,50,.24),inset 0 0 26vw rgba(0,0,0,.52)}
-body[data-heat="3"] #vignette{box-shadow:inset 0 0 18vw rgba(255,110,40,.36),inset 0 0 28vw rgba(0,0,0,.55);
-  animation:heatbreath 1.6s ease-in-out infinite alternate}
-@keyframes heatbreath{to{box-shadow:inset 0 0 16vw rgba(255,130,50,.46),inset 0 0 30vw rgba(0,0,0,.58)}}
+body[data-heat="3"] #vignette{box-shadow:inset 0 0 18vw rgba(255,110,40,.36),inset 0 0 28vw rgba(0,0,0,.55)}
+/* La respiration passe par un calque dedie en opacite : animer un box-shadow
+   plein ecran repeint tout l'ecran a chaque image, en boucle. */
+#heat{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;
+  transition:opacity .5s ease;
+  background:radial-gradient(ellipse at 50% 118%,rgba(255,130,50,.3),transparent 62%)}
+body[data-heat="3"] #heat{opacity:1;animation:heatbreath 1.7s ease-in-out infinite alternate}
+@keyframes heatbreath{from{opacity:.55}to{opacity:1}}
 
 /* ---- inclinaison 3D qui suit le curseur ---- */
 .card.tilt .inner{
@@ -302,9 +307,11 @@ body[data-q="2"] .card.idle .front .sheen{animation:idlesheen 7s ease-in-out inf
   background:radial-gradient(circle,rgba(255,236,180,.85),rgba(255,190,80,.35) 45%,transparent 70%);
   animation:crownup .9s cubic-bezier(.2,.9,.3,1)}
 
-/* ---- traine derriere une carte tiree ---- */
-.card.lift .inner{filter:drop-shadow(0 18px 22px rgba(0,0,0,.5))}
-body[data-q="0"] .card.lift .inner{filter:none}
+/* ---- carte tiree : ombre portee ----
+   Jamais de filter sur .inner : un filtre force transform-style a plat et
+   casse le retournement 3D de la carte. L'ombre va sur la face. */
+.card.lift .face{box-shadow:0 26px 46px rgba(0,0,0,.62),0 0 0 1px rgba(0,0,0,.3)}
+body[data-q="0"] .card.lift .face{box-shadow:0 14px 24px rgba(0,0,0,.55)}
 
 /* ---- colonne vidée : appel d'air ---- */
 @keyframes slotopen{
@@ -329,6 +336,27 @@ body[data-q="0"] .back::before{animation:none!important}
 body[data-q="0"] #sweep,body[data-q="0"] .card .glare{display:none}
 body[data-q="0"] .card.lift .face{box-shadow:0 14px 24px rgba(0,0,0,.55)}
 body[data-q="0"] .matsurface{box-shadow:none}
+/* palier eco : on retire tout ce qui re-rasterise une carte entiere */
+body[data-q="0"] .card .inner{transition-duration:.2s}
+body[data-q="0"] .card.land .inner,
+body[data-q="0"] .card.fpop .inner,
+body[data-q="0"] .card.wiggle .inner{animation:none}
+body[data-q="0"] .card.shine .front .sheen{animation:none}
+body[data-q="0"] .card.flipping::after,
+body[data-q="0"] .card.flipping .inner::after{display:none}
+body[data-q="0"] .card.hoverable:hover .inner{transform:translateY(-5px)}
+body[data-q="0"] .card .face{box-shadow:0 2px 6px rgba(0,0,0,.45)}
+body[data-q="0"] #bg.bgsurface{transform:none!important}
+body[data-q="0"] .matsurface{transform:none!important}
+body[data-q="0"] #table.warp{animation:none}
+body[data-q="0"] .slot.hot{box-shadow:0 0 0 2px rgba(255,215,110,.6);transform:none}
+
+/* Le flou d'arriere-plan des barres est superbe mais il force le navigateur a
+   re-flouter la zone des qu'une carte bouge dessous : mesure a -44 % d'images
+   par seconde en pleine partie. Reserve au palier plein. */
+body[data-q="2"] #topbar,body[data-q="2"] #hud{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+body[data-q="2"] .modal-bd{backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+  background:rgba(4,6,12,.72)}
 
 /* ---- respect de prefers-reduced-motion ---- */
 body[data-reduced] *,body[data-reduced] *::before,body[data-reduced] *::after{

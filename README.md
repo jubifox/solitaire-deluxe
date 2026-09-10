@@ -129,8 +129,23 @@ Ce qui a été optimisé au passage :
 - **mise en pause complète** quand l'onglet passe en arrière-plan ;
 - **`prefers-reduced-motion`** respecté : animations coupées, palier éco forcé.
 
-Mesuré dans le conteneur de développement (rendu logiciel, sans GPU) : **24 fps avant, 60 fps
-après**, effets compris. La bascule est désactivable (Options → *Fluidité adaptative*).
+Deux gros postes ont été mesurés puis débranchés du palier plein :
+- le **flou d'arrière-plan** (`backdrop-filter`) de la barre du haut et du HUD — magnifique, mais il
+  force le navigateur à re-flouter la zone dès qu'une carte bouge dessous : **−44 % d'images par
+  seconde en pleine partie**. Il n'est actif qu'au palier plein ;
+- le **canvas de particules**, plein écran : au palier éco il est masqué, les popups et le flash
+  restant du DOM ordinaire.
+
+Mesuré dans le conteneur de développement (rendu logiciel, sans GPU), au repos et sur une séquence
+de 30 pioches identiques, médiane de trois exécutions :
+
+| | au repos | en partie |
+|---|---|---|
+| avant | 17 i/s | 10 i/s |
+| après | **59 i/s** | **33 i/s** |
+
+La bascule est désactivable (Options → *Fluidité adaptative*), et cette même ligne affiche en
+direct les images par seconde et le palier courant.
 
 ### Les cosmétiques — 56 pièces
 | Type | Nombre | Exemples |

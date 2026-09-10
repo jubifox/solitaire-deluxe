@@ -251,6 +251,24 @@ var UI = (function(){
   }
 
   /* ---------------- rendu ---------------- */
+  /* Ecriture de style seulement si la valeur change reellement : sans ce
+     filtre, chaque rendu salissait le style des 52 cartes et declenchait un
+     recalcul complet, meme quand rien n'avait bouge. On compare au style
+     inline lui-meme (lecture CSSOM, sans reflow) plutot qu'a un cache : le
+     glisser et la sequence de victoire ecrivent aussi ces proprietes, et un
+     cache desynchronise laisserait une carte au mauvais endroit. */
+  function setStyle(el, prop, val){
+    if (el.style[prop] === val) return;
+    el.style[prop] = val;
+  }
+  /* forme canonique : c'est celle que le navigateur relit, donc la seule qui
+     permette la comparaison ci-dessus. Arrondi a 1/100 de pixel pour eviter
+     les chaines a rallonge et le tremblement sous-pixel. */
+  function tf(x, y){
+    return 'translate3d(' + (Math.round(x*100)/100) + 'px, '
+                          + (Math.round(y*100)/100) + 'px, 0px)';
+  }
+
   function render(){
     refit();
     var pos = positions(), G = S.game;
@@ -259,8 +277,8 @@ var UI = (function(){
       if (!p) continue;
       el._ref = p.ref; el._idx = p.idx;
       if (!S.drag || S.drag.ids.indexOf(+id) === -1){
-        el.style.transform = 'translate3d('+p.x+'px,'+p.y+'px,0)';
-        el.style.zIndex = p.z;
+        setStyle(el, 'transform', tf(p.x, p.y));
+        setStyle(el, 'zIndex', String(p.z));
       }
       el.classList.toggle('down', !c.up);
       var movable = !!G.movableFrom(p.ref, p.idx) || p.ref === 'stock';
@@ -272,14 +290,14 @@ var UI = (function(){
     // emplacements visibles seulement s'ils sont vides
     REFS.forEach(function(ref){
       var empty = G.pile(ref).length === 0;
-      S.slotEl[ref].style.opacity = empty ? 1 : 0.001;
+      setStyle(S.slotEl[ref], 'opacity', empty ? '1' : '0.001');
     });
-    S.slotEl.stock.style.opacity = G.stock.length ? 0.001 : 1;
+    setStyle(S.slotEl.stock, 'opacity', G.stock.length ? '0.001' : '1');
     /* cartes hors piles (gelées) : invisibles et inertes */
     for (var cid in S.cardEl){
       var ce = S.cardEl[cid], has = !!pos[cid];
-      ce.style.opacity = has ? '' : '0';
-      ce.style.pointerEvents = has ? '' : 'none';
+      setStyle(ce, 'opacity', has ? '' : '0');
+      setStyle(ce, 'pointerEvents', has ? '' : 'none');
     }
     updateHUD();
     if (Dense.active && window.DenseUI) DenseUI.refresh();
@@ -484,8 +502,8 @@ var UI = (function(){
       S.slotEl.stock.classList.add('recycling');
       SFX.recycle();
       FX.shake(1);
+      var c = centerOf('stock'), sc = boardToScreen(c);
       FX.shockwave(sc.x, sc.y, '#5ef2ff', {rings:3, speed:5, w:3, life:40, r0:S.geo.cw*0.25});
-      var c = centerOf('stock'); var sc = boardToScreen(c);
       FX.ring(sc.x, sc.y, '#5ef2ff', 18);
     } else {
       res.cards.forEach(function(c,i){ SFX.deal(i); });
@@ -853,25 +871,33 @@ var UI = (function(){
     /* Reflet et inclinaison 3D suivent le curseur. La position de la carte est
        deduite de la geometrie deja connue et du rect du plateau mis en cache :
        aucun getBoundingClientRect par mouvement de souris. */
-    var tilted = null;
+    /* Une seule mise a jour par image : sans ce garde-fou, chaque evenement
+       pointermove relancait une transition de transformation sur la carte. */
+    var tilted = null, pend = null, pendQ = false;
     S.el.cards.addEventListener('pointermove', function(e){
       if (Store.opts().juice === 0 || Perf.reduced) return;
       var el = e.target.closest ? e.target.closest('.card') : null;
       if (el !== tilted && tilted){ tilted.classList.remove('tilt'); tilted = null; }
-      if (!el || !S.pos) return;
-      var p = S.pos[el._id];
-      if (!p) return;
-      var br = boardRect();
-      var x = (e.clientX - br.left - p.x) / S.geo.cw;
-      var y = (e.clientY - br.top  - p.y) / S.geo.ch;
-      el.style.setProperty('--mx', (x*100).toFixed(1)+'%');
-      el.style.setProperty('--my', (y*100).toFixed(1)+'%');
-      if (Perf.tier === 2 && el.classList.contains('hoverable')){
-        el.style.setProperty('--tx', (Math.max(-1, Math.min(1, x*2-1))).toFixed(3));
-        el.style.setProperty('--ty', (Math.max(-1, Math.min(1, y*2-1))).toFixed(3));
-        el.classList.add('tilt');
-        tilted = el;
-      }
+      if (!el || !S.pos || !S.pos[el._id]) return;
+      pend = {el:el, cx:e.clientX, cy:e.clientY};
+      if (pendQ) return;
+      pendQ = true;
+      requestAnimationFrame(function(){
+        pendQ = false;
+        var d = pend; if (!d) return;
+        var p = S.pos[d.el._id]; if (!p) return;
+        var br = boardRect();
+        var x = (d.cx - br.left - p.x) / S.geo.cw;
+        var y = (d.cy - br.top  - p.y) / S.geo.ch;
+        d.el.style.setProperty('--mx', (x*100).toFixed(1)+'%');
+        d.el.style.setProperty('--my', (y*100).toFixed(1)+'%');
+        if (Perf.tier === 2 && d.el.classList.contains('hoverable')){
+          d.el.style.setProperty('--tx', (Math.max(-1, Math.min(1, x*2-1))).toFixed(3));
+          d.el.style.setProperty('--ty', (Math.max(-1, Math.min(1, y*2-1))).toFixed(3));
+          d.el.classList.add('tilt');
+          tilted = d.el;
+        }
+      });
     }, {passive:true});
     S.el.cards.addEventListener('pointerleave', function(){
       if (tilted){ tilted.classList.remove('tilt'); tilted = null; }
