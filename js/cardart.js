@@ -191,5 +191,6 @@ var CardArt = (function(){
   else installSprite();
 
   return {installSprite:installSprite, suit:suit, faceHTML:faceHTML, backHTML:backHTML,
+          pathData: function(i){ return SUIT_D[i & 3]; },
           cardHTML:cardHTML, previewFront:previewFront, previewBack:previewBack};
 })();

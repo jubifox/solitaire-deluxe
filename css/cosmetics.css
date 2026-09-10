@@ -62,6 +62,51 @@
 @keyframes goldshift{0%,100%{background-position:0 0}50%{background-position:100% 100%}}
 .sleeve-or .back::after{border-color:rgba(80,50,0,.5)}
 
+.sleeve-origami .back{background:
+  conic-gradient(from 45deg at 0% 0%,#f3ece0 0 25%,transparent 0 100%) 0 0/26px 26px,
+  conic-gradient(from 225deg at 100% 100%,#d9cdb8 0 25%,transparent 0 100%) 0 0/26px 26px,
+  linear-gradient(150deg,#e8dfcd,#c9bca3)}
+.sleeve-origami .back::after{border-color:rgba(90,70,40,.4)}
+
+.sleeve-recif .back{background:
+  repeating-radial-gradient(circle at 20% 110%,rgba(255,255,255,.16) 0 3px,transparent 3px 13px),
+  repeating-radial-gradient(circle at 80% 110%,rgba(120,255,230,.2) 0 2px,transparent 2px 11px),
+  linear-gradient(160deg,#0f7f85,#04333f)}
+
+.sleeve-runes .back{background:
+  repeating-linear-gradient(0deg,rgba(255,196,90,.16) 0 2px,transparent 2px 15px),
+  repeating-linear-gradient(90deg,rgba(255,196,90,.1) 0 2px,transparent 2px 15px),
+  radial-gradient(ellipse at 50% 45%,rgba(255,170,60,.32),transparent 62%),
+  linear-gradient(155deg,#2c2a30,#0e0d12)}
+.sleeve-runes .back .bmedal{opacity:.5;color:#ffca6a}
+
+.sleeve-obsidienne .back{background:
+  conic-gradient(from 20deg at 38% 30%,rgba(150,90,255,.35),transparent 22%,rgba(60,220,255,.3) 45%,transparent 70%),
+  conic-gradient(from 200deg at 70% 74%,rgba(255,80,180,.3),transparent 30%,rgba(120,255,200,.24) 60%,transparent 85%),
+  linear-gradient(150deg,#1b1a24,#050509)}
+.sleeve-obsidienne .back::before{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(118deg,rgba(255,255,255,.09) 0 1px,transparent 1px 12px)}
+
+.sleeve-orage .back{background:
+  repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.1) 0 6deg,transparent 6deg 22deg),
+  radial-gradient(circle at 50% 50%,#0b1826 0 12%,rgba(90,150,210,.5) 26%,#122236 55%,#050a11 100%)}
+.sleeve-orage .back::before{content:"";position:absolute;inset:-30%;
+  background:conic-gradient(from 0deg at 50% 50%,transparent 0 40%,rgba(180,225,255,.4) 55%,transparent 70%);
+  animation:swirl 7s linear infinite;will-change:transform}
+@keyframes swirl{to{transform:rotate(360deg)}}
+
+.sleeve-prisme .back{background:
+  conic-gradient(from 0deg at 50% 50%,#ff5f6d,#ffc371,#5ee7df,#7a5cff,#ff5cc8,#ff5f6d);
+  will-change:transform}
+.sleeve-prisme .back::before{content:"";position:absolute;inset:-40%;
+  background:conic-gradient(from 0deg at 50% 50%,#ff5f6d,#ffc371,#5ee7df,#7a5cff,#ff5cc8,#ff5f6d);
+  animation:swirl 5.5s linear infinite;will-change:transform;opacity:.95}
+.sleeve-prisme .back::after{border-color:rgba(255,255,255,.7);z-index:4}
+.sleeve-prisme .back .bfill{background:
+  radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.5),transparent 60%),
+  radial-gradient(ellipse at 50% 110%,rgba(0,0,0,.45),transparent 60%);z-index:3}
+.sleeve-prisme .back .bmedal{z-index:4;opacity:.55}
+
 /* ---------------- SKINS (faces) ----------------
    Chaque jeu definit son encre par enseigne (--ink / --inkred, plus --inkblue
    et --inkgreen pour le mode 4 couleurs), la teinte du papier utilisee pour
@@ -136,6 +181,69 @@
   border-radius:calc(var(--rad)*.75);border:1px solid rgba(180,140,40,.5)}
 .skin-royal .court{box-shadow:inset 0 0 18px rgba(255,200,80,.55)}
 
+.skin-craie .front{
+  --cardbg:linear-gradient(160deg,#3a4147,#252b30);
+  --ink:#f2f5f4;--inkred:#ff9d9d;--inkblue:#8fd0ff;--inkgreen:#a9e6a2;
+  --paper:#2a3035;--courtcut:#2a3035;--cardborder:rgba(255,255,255,.28);
+  --courtbg:linear-gradient(160deg,rgba(255,255,255,.09),transparent);
+  --courtborder:rgba(255,255,255,.32)}
+.skin-craie .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(102deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px)}
+.skin-craie .idx .r{text-shadow:0 0 2px rgba(255,255,255,.35)}
+
+.skin-bauhaus .front{
+  --cardbg:linear-gradient(160deg,#fbf7ef,#efe7d8);
+  --ink:#16181c;--inkred:#d92b1f;--inkblue:#1857c4;--inkgreen:#127a45;
+  --paper:#fbf7ef;--cardborder:rgba(0,0,0,.55);
+  --courtbg:linear-gradient(160deg,#f2c53d,#e0a91d);--courtborder:#16181c;
+  --idxfont:"Futura","Century Gothic","Segoe UI",sans-serif}
+.skin-bauhaus .edge{box-shadow:inset 0 0 0 2px rgba(0,0,0,.14)}
+.skin-bauhaus .court{border-width:2px}
+
+.skin-pixel .front{
+  --cardbg:linear-gradient(160deg,#1b2436,#0d1320);
+  --ink:#8bf5b0;--inkred:#ff6a8a;--inkblue:#6ac7ff;--inkgreen:#c7ff6a;
+  --paper:#131a29;--courtcut:#131a29;--cardborder:rgba(139,245,176,.5);
+  --courtbg:linear-gradient(160deg,rgba(139,245,176,.1),transparent);
+  --courtborder:rgba(139,245,176,.55);
+  --idxfont:"Courier New",Consolas,monospace}
+.skin-pixel .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.55;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.5) 0 1px,transparent 1px 3px),
+             repeating-linear-gradient(90deg,rgba(0,0,0,.35) 0 1px,transparent 1px 3px)}
+.skin-pixel .idx .r{letter-spacing:-.02em}
+
+.skin-botanik .front{
+  --cardbg:linear-gradient(160deg,#f7f3e4,#e6dec4);
+  --ink:#28331f;--inkred:#9c4322;--inkblue:#2b5c74;--inkgreen:#3d6b2c;
+  --paper:#f5f0df;--cardborder:rgba(70,80,45,.36);
+  --courtbg:linear-gradient(160deg,rgba(90,120,60,.13),transparent);
+  --courtborder:rgba(70,90,45,.42);--cardfont:Georgia,serif}
+.skin-botanik .front::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.3;
+  background:radial-gradient(circle at 22% 78%,rgba(90,120,60,.22),transparent 30%),
+             radial-gradient(circle at 80% 22%,rgba(120,140,70,.18),transparent 26%)}
+
+.skin-spectre .front{
+  --cardbg:linear-gradient(160deg,#12121c,#05050b);
+  --ink:#eaf4ff;--inkred:#ff86c8;--inkblue:#7ad2ff;--inkgreen:#8dffc4;
+  --paper:#0d0d16;--courtcut:#0d0d16;--cardborder:rgba(255,255,255,.5);
+  --courtbg:linear-gradient(160deg,rgba(255,255,255,.09),transparent);
+  --courtborder:rgba(255,255,255,.4);
+  --idxglow:0 0 12px rgba(180,220,255,.9)}
+/* Bande de foil etroite qui balaie la carte : le corps reste sombre, donc
+   l'index clair garde tout son contraste. */
+.skin-spectre .front .paper{
+  background:
+    linear-gradient(112deg,transparent 0 30%,rgba(255,95,109,.3) 38%,rgba(255,195,113,.3) 43%,
+                    rgba(94,231,223,.32) 49%,rgba(122,92,255,.3) 55%,rgba(255,92,200,.28) 60%,
+                    transparent 68%),
+    radial-gradient(ellipse at 32% -8%,rgba(255,255,255,.22),transparent 60%);
+  background-size:260% 100%,100% 100%;
+  animation:spectreshift 6.5s linear infinite;will-change:background-position;
+  mix-blend-mode:screen}
+@keyframes spectreshift{0%{background-position:-60% 50%,0 0}100%{background-position:200% 50%,0 0}}
+body[data-q="0"] .skin-spectre .front .paper{animation:none;background-position:40% 50%,0 0}
+.skin-spectre .edge{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),inset 0 0 18px rgba(160,210,255,.22)}
+
 /* ---------------- MATS (tapis) ---------------- */
 .mat-feutre .matsurface{background:
   radial-gradient(ellipse at 50% 22%,#2f8f5e 0%,#166b43 45%,#083a24 100%);
@@ -173,6 +281,35 @@
 .mat-lave .matsurface::before{content:"";position:absolute;inset:0;opacity:.35;
   background:repeating-linear-gradient(0deg,rgba(0,0,0,.5) 0 6px,transparent 6px 15px)}
 
+.mat-sable .matsurface{background:
+  repeating-linear-gradient(97deg,rgba(160,120,70,.1) 0 2px,transparent 2px 9px),
+  radial-gradient(ellipse at 50% 20%,#d9b483,#a87c4e 55%,#6d4d2c 100%);
+  box-shadow:inset 0 0 150px rgba(60,35,10,.55)}
+
+.mat-cuir .matsurface{background:
+  repeating-radial-gradient(circle at 30% 30%,rgba(0,0,0,.09) 0 2px,transparent 2px 6px),
+  radial-gradient(ellipse at 50% 22%,#a35c2c,#5e2f14 65%,#2e1608 100%);
+  box-shadow:inset 0 0 160px rgba(0,0,0,.62)}
+.mat-cuir .matsurface::before{content:"";position:absolute;inset:16px;border-radius:16px;
+  border:2px dashed rgba(255,205,150,.28)}
+
+.mat-marbre .matsurface{background:
+  linear-gradient(118deg,transparent 0 44%,rgba(255,255,255,.5) 45%,transparent 46% 100%),
+  linear-gradient(76deg,transparent 0 28%,rgba(160,180,200,.42) 29%,transparent 31% 100%),
+  linear-gradient(140deg,transparent 0 66%,rgba(255,255,255,.34) 67%,transparent 69% 100%),
+  linear-gradient(160deg,#e8ecf1,#b9c2cd 70%,#8d97a5);
+  box-shadow:inset 0 0 140px rgba(40,50,65,.4)}
+
+.mat-aurum .matsurface{background:
+  repeating-conic-gradient(from 45deg at 50% 50%,rgba(255,226,150,.16) 0 12deg,transparent 12deg 24deg),
+  repeating-linear-gradient(45deg,rgba(120,80,10,.16) 0 14px,transparent 14px 28px),
+  radial-gradient(ellipse at 50% 22%,#d8a83c,#8a6414 62%,#3c2a06 100%);
+  box-shadow:inset 0 0 160px rgba(50,30,0,.6)}
+.mat-aurum .matsurface::before{content:"";position:absolute;inset:-30%;
+  background:linear-gradient(105deg,transparent 42%,rgba(255,240,190,.3) 50%,transparent 58%);
+  animation:aurumsheen 6s ease-in-out infinite;will-change:transform}
+@keyframes aurumsheen{0%,100%{transform:translateX(-30%)}50%{transform:translateX(30%)}}
+
 /* ---------------- BACKGROUNDS (fonds) ---------------- */
 .bg-studio .bgsurface{background:radial-gradient(ellipse at 50% -10%,#232a3a,#0a0c12 65%)}
 .bg-crepuscule .bgsurface{background:linear-gradient(180deg,#2b1055,#7597de 45%,#ff9a76 78%,#2b1030)}
@@ -182,12 +319,17 @@
 .bg-foret .bgsurface::after{content:"";position:absolute;inset:0;
   background:repeating-linear-gradient(97deg,rgba(0,0,0,.35) 0 26px,transparent 26px 90px);opacity:.5}
 .bg-aurore .bgsurface{background:linear-gradient(180deg,#020617,#04121f 60%,#020617)}
-.bg-aurore .bgsurface::before,.bg-aurore .bgsurface::after{content:"";position:absolute;inset:-25%;
-  background:conic-gradient(from 210deg at 50% 50%,transparent,rgba(0,255,170,.35),rgba(80,120,255,.3),transparent 62%);
-  filter:blur(48px);animation:aurora 14s ease-in-out infinite alternate}
-.bg-aurore .bgsurface::after{animation-duration:19s;animation-direction:alternate-reverse;opacity:.7}
-@keyframes aurora{0%{transform:translate(-8%,-6%) rotate(-8deg) scale(1.1)}
-  100%{transform:translate(9%,7%) rotate(11deg) scale(1.3)}}
+/* voiles deja flous par construction : on anime une transformation sur une
+   couche promue, jamais un filter blur plein ecran (qui coutait 3/4 des images) */
+.bg-aurore .bgsurface::before,.bg-aurore .bgsurface::after{content:"";position:absolute;inset:-30%;
+  background:
+    radial-gradient(ellipse 45% 30% at 30% 42%,rgba(0,255,170,.34),transparent 70%),
+    radial-gradient(ellipse 38% 26% at 62% 55%,rgba(80,120,255,.3),transparent 72%),
+    radial-gradient(ellipse 30% 20% at 48% 30%,rgba(140,255,220,.22),transparent 74%);
+  animation:aurora 14s ease-in-out infinite alternate;will-change:transform;transform:translateZ(0)}
+.bg-aurore .bgsurface::after{animation-duration:19s;animation-direction:alternate-reverse;opacity:.65}
+@keyframes aurora{0%{transform:translate3d(-6%,-5%,0) rotate(-7deg) scale(1.08)}
+  100%{transform:translate3d(7%,6%,0) rotate(9deg) scale(1.26)}}
 .bg-skyline .bgsurface{background:
   linear-gradient(180deg,#120a2a 0%,#3a0f52 45%,#7a1550 72%,#12060f 100%)}
 .bg-skyline .bgsurface::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;
@@ -216,3 +358,54 @@
   transform:translateX(-50%);border-radius:50%;
   background:linear-gradient(180deg,#fff3b0,#ff2d95 60%,#7a1550);
   box-shadow:0 0 90px rgba(255,45,149,.55);opacity:.9}
+
+.bg-dune .bgsurface{background:
+  linear-gradient(180deg,#f6d79c 0%,#e8ab63 36%,#bf7440 66%,#7b4325 100%)}
+.bg-dune .bgsurface::after{content:"";position:absolute;left:-10%;right:-10%;bottom:0;height:52%;
+  background:
+    radial-gradient(ellipse 60% 100% at 18% 118%,#8d5029 0 60%,transparent 61%),
+    radial-gradient(ellipse 70% 100% at 78% 126%,#a36234 0 60%,transparent 61%),
+    radial-gradient(ellipse 90% 100% at 50% 150%,#6a3a1f 0 60%,transparent 61%)}
+.bg-dune .bgsurface::before{content:"";position:absolute;left:50%;top:18%;width:16vh;height:16vh;
+  transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,#fff6d8,#ffca7a 60%,transparent 72%);
+  opacity:.9}
+
+.bg-pluie .bgsurface{background:
+  linear-gradient(180deg,#060a16 0%,#0d1730 45%,#141033 74%,#05060f 100%)}
+.bg-pluie .bgsurface::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;
+  background:repeating-linear-gradient(90deg,
+    rgba(255,60,140,.22) 0 3px,transparent 3px 22px,
+    rgba(60,220,255,.2) 22px 25px,transparent 25px 54px);
+  mask-image:linear-gradient(0deg,#000 40%,transparent);
+  -webkit-mask-image:linear-gradient(0deg,#000 40%,transparent)}
+.bg-pluie .bgsurface::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 96%,rgba(90,180,255,.24),transparent 58%)}
+
+.bg-abysse .bgsurface{background:
+  radial-gradient(ellipse at 50% -18%,#1d6f9c 0%,#0a3355 34%,#04121f 72%,#01060c 100%)}
+.bg-abysse .bgsurface::before{content:"";position:absolute;inset:-25%;
+  background:repeating-linear-gradient(102deg,rgba(150,225,255,.09) 0 22px,transparent 22px 110px);
+  animation:shafts 16s ease-in-out infinite alternate;will-change:transform}
+@keyframes shafts{0%{transform:translate3d(-4%,0,0) skewX(-3deg)}100%{transform:translate3d(5%,0,0) skewX(3deg)}}
+
+.bg-braise .bgsurface{background:
+  radial-gradient(ellipse at 50% 108%,#ffb703 0 5%,#ff6b1f 14%,#8f2b06 34%,#2b1008 64%,#0d0605 100%)}
+.bg-braise .bgsurface::before{content:"";position:absolute;left:-20%;right:-20%;bottom:-10%;height:60%;
+  background:radial-gradient(ellipse at 50% 100%,rgba(255,150,40,.4),transparent 66%);
+  animation:firebreath 3.6s ease-in-out infinite alternate;will-change:transform,opacity}
+@keyframes firebreath{0%{transform:scale(1) translateY(0);opacity:.75}
+  100%{transform:scale(1.14) translateY(-3%);opacity:1}}
+
+.bg-eclipse .bgsurface{background:
+  radial-gradient(ellipse at 50% 38%,#2b1d4a 0%,#140d29 36%,#05040d 74%)}
+.bg-eclipse .bgsurface::before{content:"";position:absolute;left:50%;top:34%;
+  width:26vh;height:26vh;margin:-13vh 0 0 -13vh;border-radius:50%;background:#04030a;
+  box-shadow:0 0 0 2px rgba(255,236,190,.9),0 0 60px 14px rgba(255,190,90,.55),
+             0 0 160px 50px rgba(255,140,60,.28)}
+.bg-eclipse .bgsurface::after{content:"";position:absolute;left:50%;top:34%;
+  width:70vh;height:70vh;margin:-35vh 0 0 -35vh;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 6%,rgba(255,205,130,.22) 9%,transparent 12% 24%,
+             rgba(255,180,90,.18) 27%,transparent 30% 52%,rgba(255,220,160,.2) 55%,transparent 58% 78%,
+             rgba(255,190,110,.16) 81%,transparent 84%);
+  animation:corona 22s linear infinite;will-change:transform}
+@keyframes corona{to{transform:rotate(360deg)}}
