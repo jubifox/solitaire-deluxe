@@ -3,7 +3,17 @@
    splice pendant l'animation. Le canvas n'efface que la zone reellement
    sale de la frame precedente au lieu de tout le plein ecran. */
 var FX = (function(){
-  var cv, cx, W=0, H=0, dpr=1, running=false;
+  var cv, cx, W=0, H=0, dpr=1, scheduled=false;
+
+  /* Une seule image programmee a la fois. Sans ce verrou, chaque particule
+     creee dans la meme frame reprogrammait la boucle : une rafale de 40
+     particules lancait 40 boucles paralleles, qui redessinaient toutes le
+     meme jeu de particules a chaque image. */
+  function schedule(){
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(loop);
+  }
 
   /* ---------------- pool ---------------- */
   var POOL = [], n = 0;
@@ -22,6 +32,10 @@ var FX = (function(){
   function jl(){ return Store.opts().juice; }               // 0 sobre / 1 normal / 2 max
   function mul(){ return ([0.35, 1, 1.9][jl()] || 1) * Perf.scale; }
   function on(){ return jl() > 0 && Perf.scale > 0; }
+  /* Au palier eco le canvas plein ecran coute a lui seul plus de la moitie
+     des images par seconde en partie : on garde les popups et le flash,
+     qui sont du DOM ordinaire, mais plus de particules. */
+  function canvasOn(){ return on() && Perf.tier > 0; }
 
   function init(){
     cv = document.getElementById('fx');
@@ -35,19 +49,19 @@ var FX = (function(){
     W = cv.width  = Math.floor(innerWidth * dpr);
     H = cv.height = Math.floor(innerHeight * dpr);
     cv.style.width = innerWidth+'px'; cv.style.height = innerHeight+'px';
+    cv.style.display = Perf.tier > 0 ? '' : 'none';
     dirty = null;
   }
 
   /* ---------------- boucle ---------------- */
   var dirty = null;                        // zone sale de la frame precedente
   function loop(){
+    scheduled = false;
     if (!n){
-      running = false;
       if (dirty) cx.clearRect(dirty[0], dirty[1], dirty[2]-dirty[0], dirty[3]-dirty[1]);
       dirty = null;
       return;
     }
-    running = true;
     if (dirty) cx.clearRect(dirty[0], dirty[1], dirty[2]-dirty[0], dirty[3]-dirty[1]);
     var x0=1e9, y0=1e9, x1=-1e9, y1=-1e9;
 
@@ -114,7 +128,7 @@ var FX = (function(){
     dirty = (x1 > x0)
       ? [Math.max(0,x0-2), Math.max(0,y0-2), Math.min(W,x1+2), Math.min(H,y1+2)]
       : null;
-    requestAnimationFrame(loop);
+    schedule();
   }
 
   function star(c, r1, r2, k){
@@ -137,9 +151,9 @@ var FX = (function(){
   }
 
   function spawn(){
-    if (n >= Perf.maxParticles) return null;
+    if (!canvasOn() || n >= Perf.maxParticles) return null;
     var p = obtain();
-    if (!running) requestAnimationFrame(loop);
+    schedule();
     return p;
   }
 

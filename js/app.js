@@ -231,8 +231,23 @@ var App = (function(){
     $('btn-hint').addEventListener('click', UI.hint);
     $('btn-auto').addEventListener('click', UI.autoComplete);
 
-    $('btn-settings').addEventListener('click', function(){ SFX.click(); $('modal-settings').classList.add('on'); });
-    $('settings-close').addEventListener('click', function(){ $('modal-settings').classList.remove('on'); });
+    var perfT = null;
+    function showPerf(){
+      var el = $('perfnow'); if (!el) return;
+      var noms = ['éco', 'normal', 'plein'];
+      el.textContent = Perf.fps + ' i/s · qualité ' + noms[Perf.tier] +
+                       (Perf.reduced ? ' · animations réduites' : '');
+    }
+    function openSettings(){
+      $('modal-settings').classList.add('on');
+      showPerf(); clearInterval(perfT); perfT = setInterval(showPerf, 700);
+    }
+    function closeSettings(){
+      $('modal-settings').classList.remove('on');
+      clearInterval(perfT); perfT = null;
+    }
+    $('btn-settings').addEventListener('click', function(){ SFX.click(); openSettings(); });
+    $('settings-close').addEventListener('click', closeSettings);
 
     $('win-close').addEventListener('click', function(){ $('modal-win').classList.remove('on'); });
     $('win-new').addEventListener('click', function(){ $('modal-win').classList.remove('on'); newGame(); });

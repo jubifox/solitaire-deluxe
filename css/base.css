@@ -18,7 +18,7 @@ body{
 #topbar{
   flex:0 0 auto;display:flex;align-items:center;gap:18px;padding:10px 18px;
   background:linear-gradient(180deg,rgba(10,12,20,.92),rgba(10,12,20,.55));
-  border-bottom:1px solid rgba(255,255,255,.09);backdrop-filter:blur(14px);z-index:5;
+  border-bottom:1px solid rgba(255,255,255,.09);z-index:5;
 }
 .brand{font-size:19px;letter-spacing:.5px;font-weight:300;white-space:nowrap}
 .brand b{font-weight:800;background:linear-gradient(92deg,#ffd76e,#ff9f43 55%,#ff5f6d);
@@ -73,7 +73,7 @@ body{
 /* ---------- hud ---------- */
 #hud{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:9px 18px;
   background:linear-gradient(0deg,rgba(10,12,20,.94),rgba(10,12,20,.55));
-  border-top:1px solid rgba(255,255,255,.09);backdrop-filter:blur(14px)}
+  border-top:1px solid rgba(255,255,255,.09)}
 .stat{display:flex;flex-direction:column;line-height:1.15;padding:2px 14px 2px 0;min-width:74px}
 .stat i{font-style:normal;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#7d8798}
 .stat b{font-size:17px;font-variant-numeric:tabular-nums;transform-origin:left center}
@@ -107,7 +107,7 @@ body{
 /* ---------- modals ---------- */
 .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
 .modal.on{display:flex}
-.modal-bd{position:absolute;inset:0;background:rgba(4,6,12,.72);backdrop-filter:blur(9px);animation:fadein .25s}
+.modal-bd{position:absolute;inset:0;background:rgba(4,6,12,.82);animation:fadein .25s}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 .modal-card{position:relative;background:linear-gradient(165deg,#171c28,#0e1119);border:1px solid rgba(255,255,255,.12);
   border-radius:20px;padding:24px;min-width:340px;max-width:min(960px,94vw);max-height:92vh;overflow:auto;

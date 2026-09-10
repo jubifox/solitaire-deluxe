@@ -33,19 +33,29 @@ body.idx-2 .front{--rkf:.355;--pzf:.185}
 
 /* ---------------- carte ---------------- */
 .card{position:absolute;top:0;left:0;width:var(--cw);height:var(--ch);
-  transform-style:preserve-3d;will-change:transform;
+  transform-style:preserve-3d;
   transition:transform .3s cubic-bezier(.22,1.2,.3,1),width .26s ease,height .26s ease;
   cursor:pointer}
 .card.notrans{transition:none!important}
 .card .inner{position:absolute;inset:0;transform-style:preserve-3d;
   transition:transform .34s cubic-bezier(.4,1.15,.35,1)}
 .card.down .inner{transform:rotateY(180deg)}
+/* Le masquage de la face cachee ne repose pas seulement sur
+   backface-visibility : certains moteurs l'ignorent des qu'un filtre ou un
+   mode de fusion apparait dans le sous-arbre, et la face avant transparaissait
+   alors au travers du dos. On bascule aussi l'opacite, a mi-retournement. */
 .card .face{position:absolute;inset:0;border-radius:var(--rad);overflow:hidden;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  transition:opacity 0s linear .17s;
   box-shadow:0 calc(var(--ch)*.018) calc(var(--ch)*.05) rgba(0,0,0,.42),
              0 1px 2px rgba(0,0,0,.35),
              0 0 0 1px rgba(0,0,0,.3)}
 .card .back{transform:rotateY(180deg)}
+.card.down .front,.card:not(.down) .back{opacity:0}
+.card.notrans .face{transition:none}
+/* couche dediee uniquement pendant le mouvement : 52 cartes promues en
+   permanence, c'est 52 calques a composer a chaque image */
+.card.lift,.card.notrans,.card.idle,.card.bouncing{will-change:transform}
 .card.lift{z-index:9999}
 .card.lift .face{box-shadow:0 26px 46px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.3)}
 .card.nodrag{cursor:default}

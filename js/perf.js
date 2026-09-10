@@ -6,7 +6,7 @@ var Perf = (function(){
 
   /* echelle appliquee aux quantites de particules et d'ambiance */
   var SCALE   = [0.32, 0.68, 1];
-  var MAXPART = [220,  650,  1500];
+  var MAXPART = [160,  480,  1100];
   var MAXDPR  = [1,    1.5,  2];
 
   var tier = 2, fps = 60, frames = 0, winT0 = 0;
@@ -48,10 +48,14 @@ var Perf = (function(){
     /* on laisse passer le demarrage : distribution, chargement, premiere peinture */
     if (++windows <= 4) return;
 
-    if (fps < 40){
+    if (fps < 24){
+      /* franchement injouable : on retrograde sans attendre */
+      highStreak = 0; lowStreak = 0;
+      setTier(tier - 1);
+    } else if (fps < 40){
       lowStreak++; highStreak = 0;
-      /* trois secondes de suite sous 40 : ce n'est plus un a-coup passager */
-      if (lowStreak >= 3) setTier(tier - 1);
+      /* deux secondes de suite sous 40 : ce n'est plus un a-coup passager */
+      if (lowStreak >= 2) setTier(tier - 1);
     } else if (fps > 55){
       highStreak++; lowStreak = 0;
       /* on ne remonte qu'apres une accalmie franche, et jamais en boucle :
